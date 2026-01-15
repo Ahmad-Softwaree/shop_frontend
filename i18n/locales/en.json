@@ -1,0 +1,240 @@
+{
+  "langs": {
+    "en": "English",
+    "ar": "العربية",
+    "ckb": "کوردی"
+  },
+  "common": {
+    "no_data": "No data available",
+    "no_data_found": "No data found",
+    "search": "Search..."
+  },
+  "header": {
+    "projectName": "Shop",
+    "home": "Home",
+    "profile": "Profile"
+  },
+  "hero": {
+    "badge": "#1 Trusted Online Store",
+    "title": "Discover Your Perfect Products",
+    "subtitle": "Shop Smart, Shop Easy",
+    "description": "Experience seamless online shopping with our secure platform. Browse thousands of products, enjoy exclusive deals, and get fast delivery right to your doorstep.",
+    "shopNow": "Shop Now",
+    "learnMore": "Learn More",
+    "secure": "Secure Payment",
+    "shipping": "Free Shipping",
+    "reviews": "10k+ Reviews"
+  },
+  "features": {
+    "title": "Why Choose Us",
+    "subtitle": "Everything you need for a great shopping experience",
+    "secure": {
+      "title": "Secure Shopping",
+      "description": "Your data and payments are protected with industry-standard encryption and security measures."
+    },
+    "twoFactorAuth": {
+      "title": "Two-Factor Authentication",
+      "description": "Add an extra layer of security to your account with 2FA. Protect your personal information and purchase history."
+    },
+    "payment": {
+      "title": "Stripe Payment",
+      "description": "Fast and secure checkout with Stripe. Accept all major credit cards and payment methods."
+    },
+    "products": {
+      "title": "Wide Selection",
+      "description": "Browse thousands of quality products across multiple categories. Find exactly what you're looking for."
+    },
+    "cart": {
+      "title": "Smart Cart",
+      "description": "Easy cart management with saved items, quick checkout, and order tracking features."
+    },
+    "delivery": {
+      "title": "Fast Delivery",
+      "description": "Quick and reliable shipping options. Track your orders in real-time from warehouse to doorstep."
+    },
+    "support": {
+      "title": "24/7 Support",
+      "description": "Our customer support team is always ready to help you with any questions or concerns."
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Shopping made simple in three easy steps",
+    "step1": {
+      "title": "Browse & Select",
+      "description": "Explore our catalog and add your favorite items to your cart with just a click."
+    },
+    "step2": {
+      "title": "Secure Checkout",
+      "description": "Complete your purchase with our fast and secure payment process powered by Stripe."
+    },
+    "step3": {
+      "title": "Track & Receive",
+      "description": "Monitor your order status and receive your products at your doorstep."
+    }
+  },
+  "productsShowcase": {
+    "title": "Featured Products",
+    "subtitle": "Discover our handpicked selection of premium products",
+    "bestseller": "Bestseller",
+    "new": "New",
+    "trending": "Trending",
+    "addToWishlist": "Add to wishlist",
+    "addToCart": "Add to Cart",
+    "save": "Save",
+    "viewAll": "View All Products",
+    "product1": {
+      "name": "Premium Wireless Headphones"
+    },
+    "product2": {
+      "name": "Smart Fitness Watch"
+    },
+    "product3": {
+      "name": "Professional Camera Kit"
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "github": "GitHub",
+    "portfolio": "Portfolio"
+  },
+  "confirm": {
+    "cancel": "Cancel"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "haveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "loginButton": "Sign In",
+    "registerButton": "Sign Up",
+    "loginTitle": "Welcome Back",
+    "loginSubtitle": "Sign in to continue shopping",
+    "registerTitle": "Create Account",
+    "registerSubtitle": "Start your shopping journey today",
+    "registerSuccessTitle": "Account Created Successfully!",
+    "registerSuccessMessage": "Your account has been created. You can now sign in and start shopping.",
+    "goToLogin": "Go to Login",
+    "passwordReset": "Forgot your password?",
+    "passwordResetLink": "Reset it here",
+    "passwordResetTitle": "Reset Password",
+    "passwordResetSubtitle": "Enter your email to receive reset instructions",
+    "passwordResetButton": "Send Reset Link",
+    "backToLogin": "Back to Login",
+    "passwordResetSuccessTitle": "Check Your Email",
+    "passwordResetSuccessDescription": "If you have an account with us, you will receive a password reset email at",
+    "updatePasswordTitle": "Update Password",
+    "updatePasswordSubtitle": "Enter your new password",
+    "updatePasswordButton": "Update Password",
+    "invalidTokenTitle": "Invalid or Expired Token",
+    "invalidTokenDescription": "The password reset link is invalid or has expired. Please request a new one.",
+    "requestNewLink": "Request New Link",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "twoFactorAuthDescription": "Add an extra layer of security to your account",
+    "enable2FA": "Enable Two-Factor Authentication",
+    "disable2FA": "Disable Two-Factor Authentication",
+    "scanQRCode": "Scan this QR code with your authenticator app",
+    "qrCodeInstructions": "Use Google Authenticator, Authy, or any TOTP authenticator app to scan this code.",
+    "cancelSetup": "Cancel Setup",
+    "continueSetup": "I have scanned the code",
+    "enterOTP": "Enter the 6-digit code from your authenticator app",
+    "verifyOTP": "Verify Code",
+    "twoFactorEnabled": "Two-Factor Authentication is Enabled",
+    "twoFactorEnabledDescription": "Your account is protected with 2FA",
+    "enterLoginOTP": "Enter Two-Factor Authentication Code",
+    "enterLoginOTPDescription": "Please enter the 6-digit code from your authenticator app"
+  },
+  "profile": {
+    "title": "Profile",
+    "logout": "Logout",
+    "loggedInAs": "Logged in as",
+    "name": "Name",
+    "email": "Email",
+    "updateButton": "Update Profile",
+    "changePassword": "Change Password",
+    "form": {
+      "update_title": "Update Profile",
+      "update_description": "Update your profile information",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "submitButton": "Save Changes"
+    },
+    "updateSuccess": "Profile updated successfully",
+    "updateError": "Failed to update profile"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "subtitle": "Update your account password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "submitButton": "Change Password",
+    "success": "Password changed successfully",
+    "error": "Failed to change password",
+    "backToProfile": "Back to Profile"
+  },
+  "passwordReset": {
+    "title": "Password Reset",
+    "subtitle": "Instructions to reset your password have been sent to your email.",
+    "success": "Password reset link sent successfully",
+    "error": "Failed to send password reset link"
+  },
+  "messages": {
+    "registerSuccess": "Registration successful! Welcome aboard.",
+    "loginSuccess": "Login successful! Welcome back.",
+    "logoutSuccess": "Logout successful! See you soon.",
+    "passwordResetSuccess": "Check your email for reset instructions.",
+    "updatePasswordSuccess": "Password updated successfully! Please login.",
+    "activate2FASuccess": "Two-Factor Authentication enabled successfully!",
+    "deactivate2FASuccess": "Two-Factor Authentication disabled successfully!",
+    "loginOTPSuccess": "Login successful! Welcome back.",
+    "twoFactorAuthRequired": "Two-Factor Authentication is enabled. Please enter your code."
+  },
+  "errors": {
+    "register": "Registration failed. Please try again.",
+    "login": "Login failed. Please check your credentials.",
+    "logout": "Logout failed. Please try again.",
+    "invalidCredentials": "Invalid email or password.",
+    "emailInUse": "Email is already in use.",
+    "unauthorized": "Unauthorized. Please login.",
+    "userNotFound": "User not found.",
+    "profileUpdateFailed": "Failed to update profile.",
+    "incorrectPassword": "Current password is incorrect.",
+    "passwordChangeFailed": "Failed to change password.",
+    "alreadyLoggedIn": "You are already logged in.",
+    "passwordResetFailed": "Failed to send password reset email.",
+    "passwordUpdateFailed": "Failed to update password.",
+    "invalidToken": "Invalid or expired reset token.",
+    "expiredToken": "Reset token has expired.",
+    "2FASetupFailed": "Two-Factor Authentication is not set up for this account.",
+    "activate2FAFailed": "Failed to enable Two-Factor Authentication.",
+    "deactivate2FAFailed": "Failed to disable Two-Factor Authentication.",
+    "invalid2FACode": "Invalid authentication code. Please try again.",
+    "loginOTPFailed": "Failed to verify authentication code."
+  },
+  "validation": {
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email address",
+    "passwordRequired": "Password is required",
+    "passwordMin": "Password must be at least 8 characters",
+    "confirmPasswordRequired": "Please confirm your password",
+    "passwordsNotMatch": "Passwords do not match",
+    "nameRequired": "Name is required",
+    "nameMin": "Name must be at least 2 characters",
+    "currentPasswordRequired": "Current password is required",
+    "currentPasswordMin": "Current password must be at least 8 characters",
+    "newPasswordRequired": "New password is required",
+    "newPasswordMin": "New password must be at least 8 characters"
+  },
+  "pagination": {
+    "showing": "Showing",
+    "of": "of",
+    "items": "items",
+    "previous": "Previous",
+    "next": "Next"
+  }
+}
