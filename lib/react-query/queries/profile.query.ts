@@ -20,7 +20,7 @@ export const useUpdateProfile = ({
 
   return useMutation({
     mutationFn: (form: { name: string; email: string }) => updateProfile(form),
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       toast.success(successMessage || t("profile.updateSuccess"));
       closeModal();
       closeTheModal?.();
