@@ -1,6 +1,10 @@
 "use server";
 
 import { auth } from "@/auth";
+import { URLs } from "@/lib/urls";
+import { handleServerError } from "@/lib/error-handler";
+import { unAuthorized } from "./auth.action";
+import { update } from "@/lib/config/api.config";
 
 export type CRUDReturn = { message: string; data?: any };
 
@@ -9,17 +13,14 @@ export const updateProfile = async (form: {
   email: string;
 }): Promise<CRUDReturn> => {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      throw new Error("errors.unauthorized");
-    }
-
-    // TODO: implement axios backend request here
-    // const response = await axios.put(`/api/users/${session.user.id}`, form);
-    // return response.data;
-    throw new Error("Not implemented");
+    await unAuthorized();
+    let session = await auth();
+    const { data } = await update(
+      URLs.UPDATE_PROFILE(session?.user?.id || ""),
+      form
+    );
+    return data;
   } catch (error) {
-    throw new Error("errors.profileUpdateFailed");
+    handleServerError(error);
   }
 };

@@ -3,59 +3,72 @@ import { auth, signIn, signOut } from "@/auth";
 import { ChangePasswordSchema } from "@/validation/change_password.validation";
 import { LoginSchema } from "@/validation/login.validation";
 import { PasswordResetSchema } from "@/validation/password_reset.validation";
-import { ProfileSchema } from "@/validation/profile.validation";
 import { RegisterSchema } from "@/validation/register.validation";
 import { UpdatePasswordSchema } from "@/validation/update_password.validation";
-import bcrypt, { hash } from "bcryptjs";
-import { randomBytes } from "crypto";
-import { Resend } from "resend";
-import { toast } from "sonner";
-import { generateSecret, generate, verify, generateURI } from "otplib";
-export const getAuth = async () => {
+import { get, post, removeJWT, saveJWT } from "@/lib/config/api.config";
+import { URLs } from "@/lib/urls";
+import { handleServerError } from "@/lib/error-handler";
+
+export const checkSession = async () => {
   try {
-    let session = await auth();
+    const session = await auth();
+    return !!session?.user;
+  } catch (error: any) {
+    handleServerError(error);
+  }
+};
+export const unAuthorized = async () => {
+  try {
+    const session = await auth();
     if (!session?.user?.id) {
       throw new Error("errors.unauthorized");
     }
-    // TODO: implement axios backend request here
-    // const user = await axios.get(`/api/users/${session.user.id}`);
-    // return user.data;
-    return { twoFactorAuthEnabled: false };
-    throw new Error("Not implemented");
   } catch (error: any) {
-    throw toast.error("errors.unauthorized");
+    handleServerError(error);
+  }
+};
+export const alreadyLoggedIn = async () => {
+  try {
+    const session = await auth();
+    if (session?.user?.id) {
+      throw new Error("errors.alreadyLoggedIn");
+    }
+  } catch (error: any) {
+    handleServerError(error);
+  }
+};
+export const getAuth = async () => {
+  try {
+    await unAuthorized();
+    const data = await get(URLs.GET_AUTH);
+    return data;
+  } catch (error: any) {
+    handleServerError(error);
   }
 };
 export const register = async (data: RegisterSchema) => {
   try {
-    // TODO: implement axios backend request here
-    // const response = await axios.post('/api/auth/register', data);
-    // return response.data;
-    throw new Error("Not implemented");
+    await alreadyLoggedIn();
+    const response = await post(URLs.REGISTER, data);
+    return response;
   } catch (error: any) {
-    if (error.response?.status === 409) {
-      throw new Error("errors.emailInUse");
-    }
-    throw error;
+    handleServerError(error);
   }
 };
-export const login = async (data: LoginSchema) => {
+export const login = async (form: LoginSchema) => {
   try {
-    // TODO: implement axios backend request here
-    // const response = await axios.post('/api/auth/login', data);
-    // const user = response.data;
-    // if (user.twoFactorAuthEnabled) {
-    //   return { requires2FA: true };
-    // }
-    // await signIn("credentials", {
-    //   email: data.email,
-    //   password: data.password,
-    //   redirect: false,
-    // });
-    // return user;
-    throw new Error("Not implemented");
+    await alreadyLoggedIn();
+    const data = await post(URLs.LOGIN, form);
+    await saveJWT(data.jwt);
+    await signIn("credentials", {
+      id: data.user.id.toString(),
+      email: data.user.email,
+      jwt: data.jwt,
+      redirect: false,
+    });
+    return form;
   } catch (error: any) {
-    throw error;
+    handleServerError(error);
   }
 };
 export const checkLoginOtp = async (form: {
@@ -64,79 +77,53 @@ export const checkLoginOtp = async (form: {
   password: string;
 }) => {
   try {
-    // TODO: implement axios backend request here
-    // const response = await axios.post('/api/auth/verify-2fa', form);
-    // const user = response.data;
-    // await signIn("credentials", {
-    //   email: form.email,
-    //   password: form.password,
-    //   token: form.code,
-    //   redirect: false,
-    // });
-    // return user;
-    throw new Error("Not implemented");
+    await alreadyLoggedIn();
+    const data = await post(URLs.CHECK_LOGIN_OTP, form);
+    console.log(data);
+    await saveJWT(data.jwt);
+    await signIn("credentials", {
+      id: data.user.id.toString(),
+      email: data.user.email,
+      jwt: data.jwt,
+      redirect: false,
+    });
+    return data;
   } catch (error: any) {
-    throw error;
+    handleServerError(error);
   }
 };
 
-export const updateProfile = async (data: ProfileSchema) => {
-  try {
-    let session = await auth();
-    // TODO: implement axios backend request here
-    // const response = await axios.put(`/api/users/${session?.user?.id}`, data);
-    // return response.data;
-    throw new Error("Not implemented");
-  } catch (error: any) {
-    throw error;
-  }
-};
 export const logout = async () => {
   try {
+    await unAuthorized();
+    await post(URLs.LOGOUT);
     await signOut({
       redirect: false,
     });
+    await removeJWT();
     return true;
   } catch (error: any) {
     throw error;
   }
 };
 
-export const changePassword = async (
-  form: ChangePasswordSchema
-): Promise<{ message: string; data?: any }> => {
+export const changePassword = async (form: ChangePasswordSchema) => {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      throw new Error("errors.unauthorized");
-    }
-
-    // TODO: implement axios backend request here
-    // const response = await axios.post('/api/auth/change-password', form);
-    // return response.data;
-    throw new Error("Not implemented");
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error("errors.passwordChangeFailed");
+    await unAuthorized();
+    const data = await post(URLs.CHANGE_PASSWORD, form);
+    return data;
+  } catch (error: any) {
+    handleServerError(error);
   }
 };
 
 export const passwordReset = async (form: PasswordResetSchema) => {
   try {
-    let session = await auth();
-    if (!!session?.user?.id) {
-      throw new Error("errors.alreadyLoggedIn");
-    }
-
-    // TODO: implement axios backend request here
-    // const response = await axios.post('/api/auth/password-reset', form);
-    // return response.data;
-    return true;
+    await alreadyLoggedIn();
+    const data = await post(URLs.PASSWORD_RESET, form);
+    return data;
   } catch (error: any) {
-    throw error;
+    handleServerError(error);
   }
 };
 
@@ -144,59 +131,70 @@ export const updatePassword = async (
   form: UpdatePasswordSchema & { token: string }
 ) => {
   try {
-    // TODO: implement axios backend request here
-    // const response = await axios.post('/api/auth/update-password', form);
-    // return response.data;
-    throw new Error("Not implemented");
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error("errors.updatePasswordFailed");
+    await alreadyLoggedIn();
+    const data = await post(URLs.UPDATE_PASSWORD, form);
+    return data;
+  } catch (error: any) {
+    handleServerError(error);
   }
 };
 
 export const get2FASecret = async () => {
   try {
-    let session = await auth();
-    if (!session?.user?.id) {
-      throw new Error("errors.unauthorized");
-    }
-    // TODO: implement axios backend request here
-    // const response = await axios.get('/api/auth/2fa/secret');
-    // return response.data.secret;
-    throw new Error("Not implemented");
+    await unAuthorized();
+    const data = await get(URLs.GET_2FA_SECRET);
+    return data.secret;
   } catch (error: any) {
-    throw toast.error("errors.unauthorized");
+    handleServerError(error);
   }
 };
 
 export const activate2FA = async ({ code }: { code: string }) => {
   try {
-    let session = await auth();
-    if (!session?.user?.id) {
-      throw new Error("errors.unauthorized");
-    }
-    // TODO: implement axios backend request here
-    // const response = await axios.post('/api/auth/2fa/activate', { code });
-    // return response.data;
-    throw new Error("Not implemented");
+    await unAuthorized();
+    const data = await post(URLs.ACTIVATE_2FA, { code });
+    return data;
   } catch (error: any) {
-    throw toast.error("errors.unauthorized");
+    handleServerError(error);
   }
 };
 
 export const deactivate2FA = async () => {
   try {
-    let session = await auth();
-    if (!session?.user?.id) {
-      throw new Error("errors.unauthorized");
-    }
-    // TODO: implement axios backend request here
-    // const response = await axios.post('/api/auth/2fa/deactivate');
-    // return response.data;
-    throw new Error("Not implemented");
+    await unAuthorized();
+    const data = await post(URLs.DEACTIVATE_2FA);
+    return data;
   } catch (error: any) {
-    throw toast.error("errors.unauthorized");
+    handleServerError(error);
+  }
+};
+
+export const verifyOtp = async (form: { email: string; code: string }) => {
+  try {
+    await alreadyLoggedIn();
+    const data = await post(URLs.VERIFY_OTP, form);
+    return data;
+  } catch (error: any) {
+    handleServerError(error);
+  }
+};
+
+export const resendOtp = async (form: { email: string }) => {
+  try {
+    await alreadyLoggedIn();
+    const data = await post(URLs.RESEND_OTP, form);
+    return data;
+  } catch (error: any) {
+    handleServerError(error);
+  }
+};
+
+export const verifyResetPasswordToken = async (token: string) => {
+  try {
+    await alreadyLoggedIn();
+    const data = await get(`${URLs.VERIFY_RESET_PASSWORD_TOKEN}/${token}`);
+    return data;
+  } catch (error: any) {
+    handleServerError(error);
   }
 };

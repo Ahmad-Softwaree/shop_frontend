@@ -8,15 +8,8 @@ import {
   InfiniteQueryObserverResult,
   RefetchOptions,
 } from "@tanstack/react-query";
-
-// User type - TODO: sync with backend types
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  twoFactorAuthEnabled?: boolean;
-  twoFactorAuthSecret?: string | null;
-};
+import { User } from "./types";
+import { AxiosError } from "axios";
 
 export type GlobalFormProps = {
   state?: "update" | "insert";
@@ -110,3 +103,6 @@ export type FormProps = {
   state: "insert" | "update";
   onFinalClose?: () => void;
 };
+export type NestErrorMessage = string;
+
+export type NestError<T = unknown, N = any> = AxiosError<T, N>;

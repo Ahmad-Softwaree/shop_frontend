@@ -94,7 +94,7 @@ declare module "i18next" {
 
 import { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
-import { getCookie } from "@/lib/config/cookie.config";
+import { getCookie } from "cookies-next/client"; // Using cookies-next for Next.js
 import { ENUMs } from "@/lib/enums";
 import i18n from "@/i18n/i18n";
 
@@ -257,27 +257,31 @@ export function MyComponent() {
 
 ## 🍪 Cookie Management
 
-**File**: `lib/config/cookie.config.ts`
+**⚠️ CRITICAL: Always use `cookies-next` for cookie handling in Next.js**
 
 ```typescript
-import Cookies from "js-cookie";
+// Client-side (use in client components)
+import { getCookie, setCookie } from "cookies-next/client";
 
-export const setCookie = (name: string, value: string, days: number = 365) => {
-  Cookies.set(name, value, { expires: days });
-};
+// Server-side (use in server components/actions)
+import { getCookie, setCookie } from "cookies-next/server";
 
-export const getCookie = (name: string): string | undefined => {
-  return Cookies.get(name);
-};
+// Save language
+setCookie(ENUMs.GLOBAL.LANG_COOKIE, "en", { maxAge: 365 * 24 * 60 * 60 });
+
+// Get language
+const lang = getCookie(ENUMs.GLOBAL.LANG_COOKIE);
 ```
 
-**Package**: `js-cookie`
+**Package**: `cookies-next` (ONLY approved cookie library for Next.js)
 
 **Usage**:
 
 - Cookie name: defined in `ENUMs.GLOBAL.LANG_COOKIE`
-- Default expiry: 365 days
+- Default expiry: 365 days (31,536,000 seconds)
 - Persists user language preference
+- Client imports: `cookies-next/client`
+- Server imports: `cookies-next/server`
 
 ## ⚙️ Configuration Constants
 

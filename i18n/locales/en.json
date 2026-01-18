@@ -7,38 +7,65 @@
   "common": {
     "no_data": "No data available",
     "no_data_found": "No data found",
-    "search": "Search..."
+    "search": "Search...",
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "error": "An error occurred"
   },
   "header": {
     "projectName": "Shop",
     "home": "Home",
-    "profile": "Profile"
+    "profile": "Profile",
+    "products": "Products"
   },
   "hero": {
-    "badge": "#1 Trusted Online Store",
-    "title": "Discover Your Perfect Products",
+    "badge": "Your Community Marketplace",
+    "title": "Buy & Sell Locally, Connect Directly",
     "subtitle": "Shop Smart, Shop Easy",
-    "description": "Experience seamless online shopping with our secure platform. Browse thousands of products, enjoy exclusive deals, and get fast delivery right to your doorstep.",
+    "description": "Join our community shop where anyone can list items for sale and buyers connect directly with sellers. Simple, safe, and social.",
+    "browseItems": "Browse Items",
+    "listItem": "List Your Item",
     "shopNow": "Shop Now",
     "learnMore": "Learn More",
-    "secure": "Secure Payment",
+    "secure": "Secure Payments",
+    "payment": "Online & Cash",
+    "community": "Active Community",
     "shipping": "Free Shipping",
     "reviews": "10k+ Reviews"
   },
   "features": {
-    "title": "Why Choose Us",
-    "subtitle": "Everything you need for a great shopping experience",
-    "secure": {
-      "title": "Secure Shopping",
-      "description": "Your data and payments are protected with industry-standard encryption and security measures."
+    "title": "Why Choose Our Marketplace?",
+    "subtitle": "Everything you need to buy and sell with confidence",
+    "listItems": {
+      "title": "Easy Listing",
+      "description": "Upload your items for sale in minutes with our simple form. Add photos, description, and price."
     },
-    "twoFactorAuth": {
-      "title": "Two-Factor Authentication",
-      "description": "Add an extra layer of security to your account with 2FA. Protect your personal information and purchase history."
+    "community": {
+      "title": "Active Community",
+      "description": "Join a vibrant community of buyers and sellers. Build trust and reputation over time."
+    },
+    "directContact": {
+      "title": "Direct Messaging",
+      "description": "Contact sellers directly to ask questions, negotiate, and arrange payment and delivery."
     },
     "payment": {
-      "title": "Stripe Payment",
-      "description": "Fast and secure checkout with Stripe. Accept all major credit cards and payment methods."
+      "title": "Flexible Payments",
+      "description": "Pay online securely with Stripe credit card processing, or choose cash payment on delivery."
+    },
+    "cashOption": {
+      "title": "Cash Accepted",
+      "description": "Prefer cash? No problem! Arrange cash payment directly with the seller when you meet."
+    },
+    "secure": {
+      "title": "Secure Platform",
+      "description": "Your data and online payments are protected with industry-standard encryption and security measures."
+    },
+    "twoFactorAuth": {
+      "title": "Account Security",
+      "description": "Add an extra layer of security to your account with two-factor authentication."
     },
     "products": {
       "title": "Wide Selection",
@@ -59,23 +86,27 @@
   },
   "howItWorks": {
     "title": "How It Works",
-    "subtitle": "Shopping made simple in three easy steps",
+    "subtitle": "Getting started is simple - join, list, connect, and transact",
     "step1": {
-      "title": "Browse & Select",
-      "description": "Explore our catalog and add your favorite items to your cart with just a click."
+      "title": "Create Your Account",
+      "description": "Sign up for free to join our community marketplace. Set up your secure profile in minutes."
     },
     "step2": {
-      "title": "Secure Checkout",
-      "description": "Complete your purchase with our fast and secure payment process powered by Stripe."
+      "title": "List Your Items",
+      "description": "Upload items you want to sell with photos, description, and price. It's quick and easy!"
     },
     "step3": {
-      "title": "Track & Receive",
-      "description": "Monitor your order status and receive your products at your doorstep."
+      "title": "Browse & Discover",
+      "description": "Search through listings from community members. Find exactly what you're looking for."
+    },
+    "step4": {
+      "title": "Connect & Buy",
+      "description": "Message sellers, arrange payment (Stripe or cash), and coordinate delivery on your terms."
     }
   },
   "productsShowcase": {
-    "title": "Featured Products",
-    "subtitle": "Discover our handpicked selection of premium products",
+    "title": "Recent Listings",
+    "subtitle": "Browse items listed by our community members",
     "bestseller": "Bestseller",
     "new": "New",
     "trending": "Trending",
@@ -105,7 +136,9 @@
     "login": "Login",
     "register": "Register",
     "name": "Name",
+    "username": "Username",
     "email": "Email",
+    "phone": "Phone",
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "haveAccount": "Already have an account?",
@@ -146,21 +179,36 @@
     "twoFactorEnabled": "Two-Factor Authentication is Enabled",
     "twoFactorEnabledDescription": "Your account is protected with 2FA",
     "enterLoginOTP": "Enter Two-Factor Authentication Code",
-    "enterLoginOTPDescription": "Please enter the 6-digit code from your authenticator app"
+    "enterLoginOTPDescription": "Please enter the 6-digit code from your authenticator app",
+    "verifyAccountTitle": "Verify Your Account",
+    "verifyAccountDescription": "Enter the 6-digit verification code sent to {{email}}",
+    "verifyOtp": "Verify Account",
+    "resendOtp": "Resend Code",
+    "resendOtpCountdown": "Resend in {{seconds}}s",
+    "otpCodeLabel": "Verification Code",
+    "otpCodeDescription": "Enter the 6-digit code sent to your email"
   },
   "profile": {
     "title": "Profile",
     "logout": "Logout",
     "loggedInAs": "Logged in as",
     "name": "Name",
+    "username": "Username",
     "email": "Email",
+    "phone": "Phone",
     "updateButton": "Update Profile",
     "changePassword": "Change Password",
+    "tabs": {
+      "profile": "Profile",
+      "myProducts": "My Products"
+    },
     "form": {
       "update_title": "Update Profile",
       "update_description": "Update your profile information",
       "nameLabel": "Name",
+      "usernameLabel": "Username",
       "emailLabel": "Email",
+      "phoneLabel": "Phone",
       "submitButton": "Save Changes"
     },
     "updateSuccess": "Profile updated successfully",
@@ -184,7 +232,7 @@
     "error": "Failed to send password reset link"
   },
   "messages": {
-    "registerSuccess": "Registration successful! Welcome aboard.",
+    "registerSuccess": "Registration successful! Check your email to verify your account.",
     "loginSuccess": "Login successful! Welcome back.",
     "logoutSuccess": "Logout successful! See you soon.",
     "passwordResetSuccess": "Check your email for reset instructions.",
@@ -192,7 +240,10 @@
     "activate2FASuccess": "Two-Factor Authentication enabled successfully!",
     "deactivate2FASuccess": "Two-Factor Authentication disabled successfully!",
     "loginOTPSuccess": "Login successful! Welcome back.",
-    "twoFactorAuthRequired": "Two-Factor Authentication is enabled. Please enter your code."
+    "twoFactorAuthRequired": "Two-Factor Authentication is enabled. Please enter your code.",
+    "accountNotVerified": "Please verify your account first. Check your email for the verification code.",
+    "otpVerifySuccess": "Account verified successfully! You can now login.",
+    "otpResendSuccess": "Verification code has been sent to your email."
   },
   "errors": {
     "register": "Registration failed. Please try again.",
@@ -214,7 +265,9 @@
     "activate2FAFailed": "Failed to enable Two-Factor Authentication.",
     "deactivate2FAFailed": "Failed to disable Two-Factor Authentication.",
     "invalid2FACode": "Invalid authentication code. Please try again.",
-    "loginOTPFailed": "Failed to verify authentication code."
+    "loginOTPFailed": "Failed to verify authentication code.",
+    "otpVerifyFailed": "Failed to verify code. Please try again.",
+    "otpResendFailed": "Failed to resend verification code."
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -225,10 +278,87 @@
     "passwordsNotMatch": "Passwords do not match",
     "nameRequired": "Name is required",
     "nameMin": "Name must be at least 2 characters",
+    "usernameRequired": "Username is required",
+    "usernameMin": "Username must be at least 3 characters",
+    "usernameMax": "Username must be at most 20 characters",
+    "usernameInvalid": "Username can only contain letters, numbers, and underscores",
+    "phoneRequired": "Phone is required",
+    "phoneMin": "Phone must be at least 10 characters",
+    "phoneMax": "Phone must be at most 20 characters",
+    "phoneInvalid": "Invalid phone number format",
     "currentPasswordRequired": "Current password is required",
     "currentPasswordMin": "Current password must be at least 8 characters",
     "newPasswordRequired": "New password is required",
-    "newPasswordMin": "New password must be at least 8 characters"
+    "newPasswordMin": "New password must be at least 8 characters",
+    "productEnNameRequired": "English name is required",
+    "productArNameRequired": "Arabic name is required",
+    "productCkbNameRequired": "Kurdish name is required",
+    "productNameMin": "Product name must be at least 2 characters",
+    "productEnDescRequired": "English description is required",
+    "productArDescRequired": "Arabic description is required",
+    "productCkbDescRequired": "Kurdish description is required",
+    "productDescMin": "Description must be at least 10 characters",
+    "productPriceRequired": "Price is required",
+    "productPricePositive": "Price must be a positive number",
+    "otp": {
+      "code": {
+        "required": "Verification code is required",
+        "length": "Verification code must be 6 digits"
+      }
+    }
+  },
+  "products": {
+    "title": "Products",
+    "description": "Manage your products",
+    "myProducts": "My Products",
+    "searchPlaceholder": "Search products...",
+    "addProduct": "Add Product",
+    "addProductDescription": "Fill in the form below to add a new product",
+    "editProduct": "Edit Product",
+    "editProductDescription": "Update product information",
+    "noProducts": "No products found",
+    "createSuccess": "Product created successfully",
+    "updateSuccess": "Product updated successfully",
+    "deleteSuccess": "Product deleted successfully",
+    "buySuccess": "Product purchased successfully",
+    "markAvailableSuccess": "Product marked as available",
+    "imageDeleted": "Image deleted successfully",
+    "buy": "Buy Now",
+    "buyer": "Buyer",
+    "markAvailable": "Mark as Available",
+    "deleteTitle": "Delete Product",
+    "deleteDescription": "Are you sure you want to delete this product? This action cannot be undone.",
+    "englishName": "English Name",
+    "arabicName": "Arabic Name",
+    "kurdishName": "Kurdish Name",
+    "description": "Description",
+    "createdAt": "Created",
+    "updatedAt": "Updated",
+    "status": {
+      "available": "Available",
+      "sold_out": "Sold Out"
+    },
+    "form": {
+      "imageLabel": "Product Image",
+      "uploadImage": "Click to upload",
+      "orDragDrop": "or drag and drop",
+      "enNameLabel": "English Name",
+      "enNamePlaceholder": "Enter product name in English",
+      "arNameLabel": "Arabic Name",
+      "arNamePlaceholder": "Enter product name in Arabic",
+      "ckbNameLabel": "Kurdish Name",
+      "ckbNamePlaceholder": "Enter product name in Kurdish",
+      "priceLabel": "Price ($)",
+      "pricePlaceholder": "0.00",
+      "enDescLabel": "English Description",
+      "enDescPlaceholder": "Enter product description in English",
+      "arDescLabel": "Arabic Description",
+      "arDescPlaceholder": "Enter product description in Arabic",
+      "ckbDescLabel": "Kurdish Description",
+      "ckbDescPlaceholder": "Enter product description in Kurdish",
+      "createButton": "Create Product",
+      "updateButton": "Update Product"
+    }
   },
   "pagination": {
     "showing": "Showing",

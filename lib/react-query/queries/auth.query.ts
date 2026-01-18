@@ -10,7 +10,6 @@ import {
   login,
   logout,
   register,
-  updateProfile,
   changePassword,
   passwordReset,
   updatePassword,
@@ -18,19 +17,20 @@ import {
   activate2FA,
   deactivate2FA,
   checkLoginOtp,
+  verifyOtp,
+  resendOtp,
 } from "../actions/auth.action";
 import {
   loginMiddleware,
-  profileMiddleware,
   registerMiddleware,
 } from "../middleware/auth.middleware";
 import { ENUMs } from "@/lib/enums";
-import { ProfileSchema } from "@/validation/profile.validation";
 import { useSession } from "next-auth/react";
 import { ChangePasswordSchema } from "@/validation/change_password.validation";
 import { PasswordResetSchema } from "@/validation/password_reset.validation";
 import { UpdatePasswordSchema } from "@/validation/update_password.validation";
 import { QUERY_KEYS } from "../keys";
+import { handleMutationError } from "@/lib/error-handler";
 
 export const useGetAuth = () => {
   return useQuery({
@@ -41,17 +41,24 @@ export const useGetAuth = () => {
 
 export const useRegister = () => {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: async (data: RegisterSchema) => {
       await registerMiddleware(i18n, data);
       return await register(data);
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       toast.success(t("messages.registerSuccess"));
+      // Redirect to authentication page with email parameter
+      router.push(
+        `${ENUMs.PAGES.AUTHENTICATION}?${ENUMs.PARAMS.EMAIL}=${variables.email}`
+      );
     },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("errors.register"));
+    onError: (error: Error) => {
+      handleMutationError(error, t, "errors.register", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };
@@ -67,17 +74,37 @@ export const useLogin = () => {
       return await login(data);
     },
     onSuccess: async (data: any) => {
-      if (data?.requires2FA) {
-        toast.info(t("messages.twoFactorAuthRequired"));
-        return { requires2FA: true };
-      }
       await update();
       toast.success(t("messages.loginSuccess"));
       router.push(ENUMs.PAGES.PROFILE);
       router.refresh();
     },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("errors.login"));
+    onError: (error: any, variables) => {
+      const errorMsg = JSON.parse(error.message);
+
+      // Handle specific error codes
+      if (errorMsg.message === "ACCOUNT_NOT_VERIFIED") {
+        toast.info(t("messages.accountNotVerified"));
+        router.push(
+          `${ENUMs.PAGES.AUTHENTICATION}?${ENUMs.PARAMS.EMAIL}=${variables.email}`
+        );
+        return;
+      }
+
+      if (errorMsg.message === "TWO_FACTOR_AUTHENTICATION_REQUIRED") {
+        toast.info(t("messages.twoFactorAuthRequired"));
+        return;
+      }
+
+      // Default error handling
+      if (
+        errorMsg.message != "TWO_FACTOR_AUTHENTICATION_REQUIRED" &&
+        errorMsg.message != "ACCOUNT_NOT_VERIFIED"
+      ) {
+        handleMutationError(error, t, "errors.login", (msg) =>
+          toast.error(msg)
+        );
+      }
     },
   });
 };
@@ -100,24 +127,10 @@ export const useCheckLoginOtp = () => {
       router.push(ENUMs.PAGES.PROFILE);
       router.refresh();
     },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("errors.login"));
-    },
-  });
-};
-export const useUpdateProfile = () => {
-  const { t, i18n } = useTranslation();
-
-  return useMutation({
-    mutationFn: async (data: ProfileSchema) => {
-      await profileMiddleware(i18n, data);
-      return updateProfile(data);
-    },
-    onSuccess: () => {
-      toast.success(t("profile.updateSuccess"));
-    },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("profile.updateError"));
+    onError: (error: Error) => {
+      handleMutationError(error, t, "errors.loginOTPFailed", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };
@@ -132,8 +145,8 @@ export const useLogout = () => {
       toast.success(t("messages.logoutSuccess"));
       window.location.href = ENUMs.PAGES.LOGIN;
     },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("errors.logout"));
+    onError: (error: Error) => {
+      handleMutationError(error, t, "errors.logout", (msg) => toast.error(msg));
     },
   });
 };
@@ -152,8 +165,10 @@ export const useChangePassword = () => {
 
       router.push(ENUMs.PAGES.PROFILE);
     },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("changePassword.error"));
+    onError: (error: Error) => {
+      handleMutationError(error, t, "changePassword.error", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };
@@ -166,8 +181,10 @@ export const usePasswordReset = () => {
     onSuccess: async () => {
       toast.success(t("messages.passwordResetSuccess"));
     },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("errors.passwordResetFailed"));
+    onError: (error: Error) => {
+      handleMutationError(error, t, "errors.passwordResetFailed", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };
@@ -182,8 +199,10 @@ export const useUpdatePassword = () => {
       toast.success(t("messages.updatePasswordSuccess"));
       window.location.href = ENUMs.PAGES.LOGIN;
     },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("errors.passwordUpdateFailed"));
+    onError: (error: Error) => {
+      handleMutationError(error, t, "errors.passwordUpdateFailed", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };
@@ -201,8 +220,10 @@ export const useActivate2FA = () => {
       await update();
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.AUTH] });
     },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("errors.activate2FAFailed"));
+    onError: (error: Error) => {
+      handleMutationError(error, t, "errors.activate2FAFailed", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };
@@ -219,8 +240,56 @@ export const useDisable2FA = () => {
       await update();
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.AUTH] });
     },
-    onError: (error: any) => {
-      toast.error(t(error.message) || t("errors.deactivate2FAFailed"));
+    onError: (error: Error) => {
+      handleMutationError(error, t, "errors.deactivate2FAFailed", (msg) =>
+        toast.error(msg)
+      );
+    },
+  });
+};
+
+export const useVerifyOtp = (options?: {
+  successMessage?: string;
+  onSuccess?: () => void;
+}) => {
+  const { t } = useTranslation();
+  return useMutation({
+    mutationFn: async (data: { email: string; code: string }) => {
+      return await verifyOtp(data);
+    },
+    onSuccess: async () => {
+      toast.success(
+        options?.successMessage || t("messages.otpVerifySuccess" as any)
+      );
+      options?.onSuccess?.();
+    },
+    onError: (error: Error) => {
+      handleMutationError(error, t, "errors.otpVerifyFailed", (msg) =>
+        toast.error(msg)
+      );
+    },
+  });
+};
+
+export const useResendOtp = (options?: {
+  successMessage?: string;
+  onSuccess?: () => void;
+}) => {
+  const { t } = useTranslation();
+  return useMutation({
+    mutationFn: async (data: { email: string }) => {
+      return await resendOtp(data);
+    },
+    onSuccess: async () => {
+      toast.success(
+        options?.successMessage || t("messages.otpResendSuccess" as any)
+      );
+      options?.onSuccess?.();
+    },
+    onError: (error: Error) => {
+      handleMutationError(error, t, "errors.otpResendFailed", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };

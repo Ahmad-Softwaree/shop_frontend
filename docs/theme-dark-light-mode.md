@@ -33,7 +33,7 @@ This project uses **next-themes** for seamless dark/light mode switching with:
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useEffect, useState } from "react";
-import { getCookie } from "@/lib/config/cookie.config";
+import { getCookie } from "cookies-next/client"; // Using cookies-next for Next.js
 import type { ComponentProps } from "react";
 
 export function ThemeProvider({
@@ -44,7 +44,7 @@ export function ThemeProvider({
 
   useEffect(() => {
     setMounted(true);
-    const savedTheme = getCookie("theme");
+    const savedTheme = getCookie(ENUMs.GLOBAL.THEME_COOKIE);
     if (savedTheme && (savedTheme === "dark" || savedTheme === "light")) {
       document.documentElement.classList.toggle("dark", savedTheme === "dark");
     }
@@ -112,7 +112,7 @@ export default function RootLayout({
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { setCookie } from "@/lib/config/cookie.config";
+import { setCookie } from "cookies-next/client"; // Using cookies-next for Next.js
 import { useEffect } from "react";
 
 export function ModeToggle() {
@@ -120,14 +120,14 @@ export function ModeToggle() {
 
   useEffect(() => {
     if (theme) {
-      setCookie("theme", theme);
+      setCookie(ENUMs.GLOBAL.THEME_COOKIE, theme);
     }
   }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
-    setCookie("theme", newTheme);
+    setCookie(ENUMs.GLOBAL.THEME_COOKIE, newTheme);
   };
 
   return (
@@ -277,23 +277,31 @@ Required variables for shadcn/ui compatibility:
 
 ## 🍪 Cookie Persistence
 
-**Pattern**: Theme preference is saved to cookies
+**⚠️ CRITICAL: Always use `cookies-next` for cookie handling in Next.js**
+
+**Pattern**: Theme preference is saved to cookies using `cookies-next`
 
 ```typescript
-import { setCookie, getCookie } from "@/lib/config/cookie.config";
+// Client-side (use client components)
+import { setCookie, getCookie } from "cookies-next/client";
+
+// Server-side (use server components/actions)
+import { setCookie, getCookie } from "cookies-next/server";
 
 // Save theme
-setCookie("theme", "dark");
+setCookie(ENUMs.GLOBAL.THEME_COOKIE, "dark");
 
 // Read theme
-const savedTheme = getCookie("theme");
+const savedTheme = getCookie(ENUMs.GLOBAL.THEME_COOKIE);
 ```
 
 **Configuration**:
 
-- Cookie name: `"theme"`
+- Cookie name: ENUMs.GLOBAL.THEME_COOKIE
 - Values: `"dark"` | `"light"` | `"system"`
-- Expiry: 365 days (default from `cookie.config.ts`)
+- Library: **cookies-next** (ONLY approved cookie library)
+- Client imports: `cookies-next/client`
+- Server imports: `cookies-next/server`
 
 ## 🎨 Using Theme in Components
 
@@ -515,8 +523,8 @@ console.log({ theme, resolvedTheme, systemTheme });
 ### Check Cookie
 
 ```tsx
-import { getCookie } from "@/lib/config/cookie.config";
-console.log("Saved theme:", getCookie("theme"));
+import { getCookie } from "cookies-next/client"; // Using cookies-next for Next.js
+console.log("Saved theme:", getCookie(ENUMs.GLOBAL.THEME_COOKIE));
 ```
 
 ### Check DOM

@@ -1,24 +1,34 @@
 import UpdatePasswordForm from "@/components/forms/UpdatePasswordForm";
 import InvalidTokenCard from "@/components/cards/InvalidTokenCard";
+import { verifyResetPasswordToken } from "@/lib/react-query/actions/auth.action";
 
 const UpdatePasswordPage = async ({
   searchParams,
 }: {
   searchParams: Promise<{ token: string }>;
 }) => {
-  let token = (await searchParams).token;
+  const { token } = await searchParams;
   let tokenIsValid = false;
 
-  if (token) {
-    // TODO: implement axios backend request here
-    // const response = await axios.get(`/api/auth/validate-token/${token}`);
-    // tokenIsValid = response.data.valid;
-
-    // For now, assume token is valid if present
-    tokenIsValid = true;
+  if (!token) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+        <InvalidTokenCard />
+      </div>
+    );
   }
 
-  // Show invalid token card if token is not valid
+  try {
+    const data = await verifyResetPasswordToken(token);
+
+    if (data?.message === "VALID_RESET_TOKEN") {
+      tokenIsValid = true;
+    }
+  } catch (err: any) {
+    console.log("Token validation error:", err);
+    tokenIsValid = false;
+  }
+
   if (!tokenIsValid) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">

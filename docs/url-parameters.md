@@ -296,9 +296,13 @@ The `limit` parameter is persisted in a cookie for user preference.
 
 ### Configuration
 
+**⚠️ CRITICAL: Always use `cookies-next` for cookie handling in Next.js**
+
 ```typescript
 // lib/config/pagination.config.ts
-import { getCookie, setCookie } from "./cookie.config";
+import { getCookie, setCookie } from "cookies-next/client"; // Client-side
+// OR
+import { getCookie, setCookie } from "cookies-next/server"; // Server-side
 
 const LIMIT_COOKIE_NAME = "pagination_limit";
 const VALID_LIMITS = [50, 100, 150, 200] as const;
@@ -319,10 +323,17 @@ export const getLimitFromCookie = (): number => {
 
 export const setLimitCookie = (limit: number): void => {
   if (VALID_LIMITS.includes(limit as any)) {
-    setCookie(LIMIT_COOKIE_NAME, limit.toString(), 30);
+    setCookie(LIMIT_COOKIE_NAME, limit.toString(), {
+      maxAge: 30 * 24 * 60 * 60,
+    });
   }
 };
 ```
+
+**Library**: `cookies-next` (ONLY approved cookie library)
+
+- Client imports: `cookies-next/client`
+- Server imports: `cookies-next/server`
 
 **How it works:**
 

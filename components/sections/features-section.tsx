@@ -5,14 +5,34 @@ import {
   Shield,
   ShieldCheck,
   CreditCard,
-  ShoppingBag,
-  ShoppingCart,
-  Truck,
-  Headphones,
+  Upload,
+  Users,
+  MessageCircle,
+  Wallet,
 } from "lucide-react";
 import { AnimateOnScroll } from "@/components/shared/animate";
 
 const features = [
+  {
+    icon: Upload,
+    key: "listItems",
+  },
+  {
+    icon: Users,
+    key: "community",
+  },
+  {
+    icon: MessageCircle,
+    key: "directContact",
+  },
+  {
+    icon: CreditCard,
+    key: "payment",
+  },
+  {
+    icon: Wallet,
+    key: "cashOption",
+  },
   {
     icon: Shield,
     key: "secure",
@@ -20,26 +40,6 @@ const features = [
   {
     icon: ShieldCheck,
     key: "twoFactorAuth",
-  },
-  {
-    icon: CreditCard,
-    key: "payment",
-  },
-  {
-    icon: ShoppingBag,
-    key: "products",
-  },
-  {
-    icon: ShoppingCart,
-    key: "cart",
-  },
-  {
-    icon: Truck,
-    key: "delivery",
-  },
-  {
-    icon: Headphones,
-    key: "support",
   },
 ];
 
@@ -51,12 +51,15 @@ export default function FeaturesSection() {
       <div className="text-center  mb-16 space-y-4">
         <AnimateOnScroll animation="fade-up">
           <h2 className="text-4xl md:text-5xl font-bold">
-            {t("features.title")}
+            {t("features.title", "Why Choose Our Marketplace?")}
           </h2>
         </AnimateOnScroll>
         <AnimateOnScroll animation="fade-up" delay={0.2}>
           <p className="text-lg text-muted-foreground">
-            {t("features.subtitle")}
+            {t(
+              "features.subtitle",
+              "Everything you need to buy and sell with confidence"
+            )}
           </p>
         </AnimateOnScroll>
       </div>

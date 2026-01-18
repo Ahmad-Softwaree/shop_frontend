@@ -83,6 +83,12 @@ This file contains **strict coding standards and architecture patterns** for the
 
 - **next-themes** - Dark/light mode management
 
+#### **Cookie Management**
+
+- **cookies-next** - Cookie handling for Next.js (client and server)
+  - **ALWAYS use `cookies-next`** for all cookie operations
+  - **NEVER use** native `document.cookie`, `js-cookie`, or other cookie libraries
+
 #### **Internationalization**
 
 - **i18next** - Translation framework
@@ -107,6 +113,7 @@ Other form libraries: Formik (use react-hook-form with shadcn/ui Form)
 - ❌ CSS frameworks: Bootstrap, Bulma, Foundation, etc.
 - ❌ Icon libraries: Font Awesome, React Icons, Heroicons (use Lucide only)
 - ❌ Other validation: Yup, Joi, class-validator (use Zod only)
+- ❌ Cookie libraries: js-cookie, universal-cookie, react-cookie, or native document.cookie (use cookies-next only)
 - ❌ Raw URL params: searchParams, useSearchParams, URLSearchParams (use nuq
   Before adding ANY new library:
 
@@ -208,14 +215,13 @@ Before writing ANY code:
 ## 🎯 Quick Reference
 
 | Need          | Use                   | Location                              |
-| ------------- | --------------------- | ------------------------------------- |
+| ------------- | --------------------- | ------------------------------------- | --- | ------- | ------------ | ----------------------------- | --- | ----------- | ------- | ----------------------- |
 | Button        | `shadcn/ui`           | `npx shadcn@latest add button`        |
 | Icons         | Lucide React          | `import { Icon } from "lucide-react"` |
 | Styling       | Tailwind CSS + `cn()` | `className={cn("...")}`               |
 | Page sections | Extract to component  | `components/sections/`                |
 | URL params    | nuqs                  | Direct usage in components            |
-| Theme         | next-themes           | `providers/theme-provider.tsx`        |
-| Translation   | i18next               | `useTranslation()` hook               |
+| Theme         | next-themes           | `providers/theme-provider.tsx`        |     | Cookies | cookies-next | `getCookie()` / `setCookie()` |     | Translation | i18next | `useTranslation()` hook |
 | Auth config   | NextAuth.js           | `auth.ts` (root level)                |
 | Route protect | NextAuth middleware   | `await auth()` or `useSession()`      |
 | Password hash | bcryptjs              | `hash()` and `compare()`              |
@@ -229,6 +235,7 @@ Before writing ANY code:
 - **[Component Organization](docs/component-organization.md)** - Component structure, folder organization, and file naming
 - **[UI Components](docs/ui-components.md)** - shadcn/ui component usage and styling
 - **[Authentication](docs/authentication.md)** - NextAuth.js setup, route protection, and security patterns
+- **[Cookie Management](docs/cookie-management.md)** - cookies-next usage for client and server cookies
 - **[Internationalization](docs/internationalization.md)** - i18next setup and translation patterns
 - **[Theme (Dark/Light Mode)](docs/theme-dark-light-mode.md)** - next-themes configuration
 - **[URL Parameters](docs/url-parameters.md)** - nuqs for type-safe URL state management

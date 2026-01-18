@@ -1,7 +1,9 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
-import { verify } from "otplib";
+import { URLs } from "./lib/urls";
+
+const authorizedRoutes = ["/profile", "/change-password", "/products"];
+const notAuthorizedRoutes = ["/login", "/register", "/authentication"];
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
@@ -10,20 +12,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnProfile = nextUrl.pathname.startsWith("/profile");
-      const isOnChangePassword =
-        nextUrl.pathname.startsWith("/change-password");
-      const isOnAuthPage =
-        nextUrl.pathname.startsWith("/login") ||
-        nextUrl.pathname.startsWith("/register");
 
-      // Redirect authenticated users away from auth pages
-      if (isLoggedIn && isOnAuthPage) {
+      if (
+        isLoggedIn &&
+        notAuthorizedRoutes.some((route) => nextUrl.pathname.startsWith(route))
+      ) {
         return Response.redirect(new URL("/profile", nextUrl));
       }
-
-      // Protect authenticated routes
-      if ((isOnProfile || isOnChangePassword) && !isLoggedIn) {
+      if (
+        authorizedRoutes.some((route) => nextUrl.pathname.startsWith(route)) &&
+        !isLoggedIn
+      ) {
         return Response.redirect(new URL("/login", nextUrl));
       }
 
@@ -32,24 +31,40 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.name = user.name;
+        token.email = user.email;
+        if (user.jwt) {
+          token.jwt = user.jwt;
+        }
       }
       return token;
     },
     async session({ session, token }) {
-      // TODO: implement axios backend request here
-      // Re-fetch fresh user data from backend
-      // const response = await axios.get(`/api/users/${token.id}`);
-      // const dbUser = response.data;
-      // if (dbUser) {
-      //   session.user.id = dbUser.id;
-      //   session.user.name = dbUser.name;
-      //   session.user.email = dbUser.email;
-      // }
+      try {
+        const cookieName = process.env.NEXT_PUBLIC_COOKIE_NAME as string;
+        const res = await fetch(URLs.GET_AUTH, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `${cookieName}=${token.jwt}`,
+          },
+        });
 
-      // For now, use token data
-      if (token.id) {
+        if (res.ok) {
+          const data = await res.json();
+          session.user.id = data.id as string;
+          session.user.email = data.email as string;
+        } else {
+          session.user.id = token.id as string;
+          session.user.email = token.email as string;
+        }
+      } catch {
         session.user.id = token.id as string;
+        session.user.email = token.email as string;
+      }
+
+      if (token.jwt) {
+        session.jwt = token.jwt as string;
       }
 
       return session;
@@ -58,20 +73,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
+        id: {},
         email: {},
-        password: {},
         token: {},
+        jwt: {},
       },
       async authorize(credentials) {
-        // TODO: implement axios backend request here
-        // const response = await axios.post('/api/auth/validate', credentials);
-        // const user = response.data;
-        // return {
-        //   id: user.id.toString(),
-        //   email: user.email,
-        //   name: user.name,
-        // };
-        throw new Error("Not implemented");
+        return {
+          id: credentials.id as string,
+          email: credentials.email as string,
+          jwt: credentials.jwt as string,
+        };
       },
     }),
   ],

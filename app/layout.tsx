@@ -17,9 +17,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Learning Tracker - Track Your Learning Journey",
+  title: "Local Shop - Buy and Sell Locally",
   description:
-    "A modern web application to track and manage your learning activities. Log courses, books, tutorials, and visualize your progress with insights and analytics.",
+    "Discover amazing products from your local community. Buy and sell with ease on Local Shop.",
 };
 
 export default async function RootLayout({

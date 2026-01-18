@@ -21,20 +21,23 @@ export default function HeroSection() {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
               <TrendingUp className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-primary">
-                {t("hero.badge", "#1 Trusted Online Store")}
+                {t("hero.badge", "Your Community Marketplace")}
               </span>
             </div>
           </AnimateOnScroll>
 
           <AnimateOnScroll animation="fade-down">
             <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-              {t("hero.title")}
+              {t("hero.title", "Buy & Sell Locally, Connect Directly")}
             </h1>
           </AnimateOnScroll>
 
           <AnimateOnScroll animation="fade-up" delay={0.2}>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              {t("hero.description")}
+              {t(
+                "hero.description",
+                "Join our community shop where anyone can list items for sale and buyers connect directly with sellers. Simple, safe, and social."
+              )}
             </p>
           </AnimateOnScroll>
 
@@ -42,10 +45,10 @@ export default function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
               <Button size="lg" className="min-w-48">
                 <ShoppingBag className="w-5 h-5 mr-2" />
-                {t("hero.shopNow", "Shop Now")}
+                {t("hero.browseItems", "Browse Items")}
               </Button>
               <Button size="lg" variant="outline" className="min-w-48">
-                {t("hero.learnMore", "Learn More")}
+                {t("hero.listItem", "List Your Item")}
               </Button>
             </div>
           </AnimateOnScroll>
@@ -56,19 +59,19 @@ export default function HeroSection() {
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Shield className="w-5 h-5 text-primary" />
                 <span className="text-sm font-medium">
-                  {t("hero.secure", "Secure Payment")}
+                  {t("hero.secure", "Secure Payments")}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
-                <span className="text-2xl">🚚</span>
+                <span className="text-2xl">💳</span>
                 <span className="text-sm font-medium">
-                  {t("hero.shipping", "Free Shipping")}
+                  {t("hero.payment", "Online & Cash")}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
-                <span className="text-2xl">⭐</span>
+                <span className="text-2xl">👥</span>
                 <span className="text-sm font-medium">
-                  {t("hero.reviews", "10k+ Reviews")}
+                  {t("hero.community", "Active Community")}
                 </span>
               </div>
             </div>

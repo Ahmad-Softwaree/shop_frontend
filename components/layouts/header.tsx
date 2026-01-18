@@ -16,9 +16,11 @@ export default function Header() {
   const { t } = useTranslation();
   const { data: session } = useSession();
   const pathname = usePathname();
-  const isInProfile =
-    pathname?.startsWith("/profile") ||
-    pathname?.startsWith("/change-password");
+  const isHomePage = pathname === ENUMs.PAGES.HOME;
+  const isAuthPage =
+    pathname?.startsWith(ENUMs.PAGES.PROFILE) ||
+    pathname?.startsWith(ENUMs.PAGES.PRODUCTS) ||
+    pathname?.startsWith(ENUMs.PAGES.CHANGE_PASSWORD);
   const { mutateAsync: logoutMutation, isPending } = useLogout();
 
   const handleLogout = async () => {
@@ -62,27 +64,7 @@ export default function Header() {
                 </Link>
               </Button>
             </div>
-          ) : isInProfile ? (
-            <div className="hidden md:flex items-center gap-2">
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleLogout}
-                disabled={isPending}>
-                <LogOut className="h-4 w-4 mr-2" />
-                {t("profile.logout")}
-              </Button>
-            </div>
-          ) : (
-            <div className="hidden md:flex items-center gap-2">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href={ENUMs.PAGES.PROFILE}>
-                  <User className="h-4 w-4 mr-2" />
-                  {t("header.profile")}
-                </Link>
-              </Button>
-            </div>
-          )}
+          ) : null}
 
           {/* Mobile Auth Buttons - Icon only */}
           {!session ? (
@@ -100,30 +82,59 @@ export default function Header() {
                 </Link>
               </Button>
             </div>
-          ) : isInProfile ? (
-            <div className="flex md:hidden items-center gap-1">
+          ) : null}
+
+          <div className="w-px h-6 bg-border mx-1" />
+
+          {/* Show profile and logout icons for logged in users */}
+          {session && (
+            <>
+              {/* Products link - only shown on auth pages */}
+              {isAuthPage && (
+                <Button variant="outline" size="icon" asChild>
+                  <Link
+                    href={ENUMs.PAGES.PRODUCTS}
+                    aria-label={t("header.products")}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
+                      <path d="m7.5 4.27 9 5.15" />
+                      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                      <path d="m3.3 7 8.7 5 8.7-5" />
+                      <path d="M12 22V12" />
+                    </svg>
+                  </Link>
+                </Button>
+              )}
               <Button
-                variant="destructive"
+                variant="outline"
                 size="icon"
-                onClick={handleLogout}
-                disabled={isPending}
-                aria-label={t("profile.logout")}>
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
-          ) : (
-            <div className="flex md:hidden items-center gap-1">
-              <Button variant="ghost" size="icon" asChild>
+                className="rounded-full"
+                asChild>
                 <Link
                   href={ENUMs.PAGES.PROFILE}
                   aria-label={t("header.profile")}>
-                  <User className="h-4 w-4" />
+                  <User className="h-5 w-5" />
                 </Link>
               </Button>
-            </div>
+              <Button
+                variant="destructive"
+                size="icon"
+                className="rounded-full"
+                onClick={handleLogout}
+                disabled={isPending}
+                aria-label={t("profile.logout")}>
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </>
           )}
-
-          <div className="w-px h-6 bg-border mx-1" />
 
           <Button
             variant="outline"
@@ -134,15 +145,17 @@ export default function Header() {
               <Home className="h-5 w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" asChild>
-            <a
-              href="https://github.com/Ahmad-Softwaree"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub Profile">
-              <Github className="h-5 w-5" />
-            </a>
-          </Button>
+          {isHomePage && (
+            <Button variant="ghost" size="icon" asChild>
+              <a
+                href="https://github.com/Ahmad-Softwaree"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub Profile">
+                <Github className="h-5 w-5" />
+              </a>
+            </Button>
+          )}
           <ThemeToggle />
           <LangToggle />
         </div>

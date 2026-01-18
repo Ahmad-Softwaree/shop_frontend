@@ -1,21 +1,31 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { Search, CreditCard, Package, ArrowRight } from "lucide-react";
+import {
+  UserPlus,
+  Upload,
+  Search,
+  MessageCircle,
+  ArrowRight,
+} from "lucide-react";
 import { AnimateOnScroll } from "@/components/shared/animate";
 
 const steps = [
   {
-    icon: Search,
+    icon: UserPlus,
     key: "step1",
   },
   {
-    icon: CreditCard,
+    icon: Upload,
     key: "step2",
   },
   {
-    icon: Package,
+    icon: Search,
     key: "step3",
+  },
+  {
+    icon: MessageCircle,
+    key: "step4",
   },
 ];
 
@@ -28,12 +38,15 @@ export default function HowItWorksSection() {
       <div className="text-center mb-16 space-y-4">
         <AnimateOnScroll animation="fade-up">
           <h2 className="text-4xl md:text-5xl font-bold">
-            {t("howItWorks.title")}
+            {t("howItWorks.title", "How It Works")}
           </h2>
         </AnimateOnScroll>
         <AnimateOnScroll animation="fade-up" delay={0.2}>
           <p className="text-lg text-muted-foreground">
-            {t("howItWorks.subtitle")}
+            {t(
+              "howItWorks.subtitle",
+              "Getting started is simple - join, list, connect, and transact"
+            )}
           </p>
         </AnimateOnScroll>
       </div>
@@ -43,7 +56,7 @@ export default function HowItWorksSection() {
         {/* Connection Line */}
         <div className="hidden md:block absolute top-24 left-[16.66%] right-[16.66%] h-0.5 bg-gradient-to-r from-primary via-primary to-primary opacity-20" />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (

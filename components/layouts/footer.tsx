@@ -13,6 +13,7 @@ export default function Footer() {
   const { t } = useTranslation();
   const { data: session } = useSession();
   const pathname = usePathname();
+  const isHomePage = pathname === ENUMs.PAGES.HOME;
   const isInDashboard =
     pathname?.startsWith("/dashboard") ||
     pathname?.startsWith("/profile") ||
@@ -66,21 +67,25 @@ export default function Footer() {
             </div>
           )}
 
-          <a
-            href="https://github.com/Ahmad-Softwaree"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="english_font flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
-            <Github className="h-4 w-4" />
-            {t("footer.github")}
-          </a>
-          <a
-            href="https://ahmad-software.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-primary transition-colors">
-            {t("footer.portfolio")}
-          </a>
+          {isHomePage && (
+            <a
+              href="https://github.com/Ahmad-Softwaree"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="english_font flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Github className="h-4 w-4" />
+              {t("footer.github")}
+            </a>
+          )}
+          {isHomePage && (
+            <a
+              href="https://ahmad-software.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              {t("footer.portfolio")}
+            </a>
+          )}
         </div>
       </div>
     </footer>

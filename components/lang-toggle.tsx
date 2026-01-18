@@ -6,11 +6,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { setCookie } from "@/lib/config/cookie.config";
 import { ENUMs } from "@/lib/enums";
 import { Languages } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";
+import { setCookie } from "cookies-next/client";
 
 export const setLanguage = (selectedLang: string) => {
   setCookie(ENUMs.GLOBAL.LANG_COOKIE, selectedLang);

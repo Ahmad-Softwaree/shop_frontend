@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import Link from "next/link";
-import { Mail, Lock, Loader2, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, Loader2, CheckCircle2, Phone } from "lucide-react";
 
 import { useRegister } from "@/lib/react-query/queries/auth.query";
 import {
@@ -41,7 +41,9 @@ const RegisterForm = () => {
     resolver: zodResolver(getRegisterSchema(i18n)),
     defaultValues: {
       name: "",
+      username: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
     },
@@ -116,6 +118,25 @@ const RegisterForm = () => {
 
             <FormField
               control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("auth.username")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="johndoe"
+                      {...field}
+                      disabled={isPending}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
@@ -126,6 +147,29 @@ const RegisterForm = () => {
                       <Input
                         type="email"
                         placeholder="example@email.com"
+                        className="pl-10"
+                        {...field}
+                        disabled={isPending}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("auth.phone")}</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="tel"
+                        placeholder="+1234567890"
                         className="pl-10"
                         {...field}
                         disabled={isPending}

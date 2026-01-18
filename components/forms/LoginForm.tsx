@@ -57,13 +57,17 @@ const LoginForm = () => {
     useCheckLoginOtp();
 
   const onSubmit = async (data: LoginSchema) => {
-    const response = await loginMutate(data);
-    if (response && response.requires2FA) {
-      setCredentials(data);
-      setShowOtp(true);
-    } else {
-      form.reset();
-    }
+    await loginMutate(data)
+      .then(() => {
+        form.reset();
+      })
+      .catch((error: any) => {
+        const errorData = JSON.parse(error.message);
+        if (errorData?.message === "TWO_FACTOR_AUTHENTICATION_REQUIRED") {
+          setCredentials(data);
+          setShowOtp(true);
+        }
+      });
   };
 
   const handleOtpSubmit = async () => {

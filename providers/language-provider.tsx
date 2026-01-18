@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
-import { getCookie } from "@/lib/config/cookie.config";
 import { ENUMs } from "@/lib/enums";
 import i18n from "@/i18n/i18n";
+import { getCookie } from "cookies-next/client";
 
 function LanguageSetup() {
   useEffect(() => {
@@ -15,7 +15,6 @@ function LanguageSetup() {
       langToUse = cookieLang;
     }
 
-    // Only change if different from current
     if (i18n.language !== langToUse) {
       i18n.changeLanguage(langToUse);
     }
@@ -52,7 +51,6 @@ export default function LanguageProvider({
     setMounted(true);
   }, []);
 
-  // Don't render children until mounted to avoid hydration mismatch
   if (!mounted) {
     return null;
   }

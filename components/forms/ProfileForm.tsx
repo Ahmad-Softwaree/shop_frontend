@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
-import { useSession } from "next-auth/react";
 import { useModalStore } from "@/lib/store/modal.store";
 import { useUpdateProfile } from "@/lib/react-query/queries/profile.query";
 import {
@@ -20,17 +19,20 @@ import {
   ProfileSchema,
   getProfileSchema,
 } from "@/validation/profile.validation";
+import { useAuthStore } from "@/lib/store/auth.store";
 
 export default function ProfileForm() {
   const { t, i18n } = useTranslation();
-  const { data: session } = useSession();
   const { closeModal } = useModalStore();
+  const { user } = useAuthStore();
 
   const form = useForm<ProfileSchema>({
     resolver: zodResolver(getProfileSchema(i18n)),
     defaultValues: {
-      name: session?.user?.name || "",
-      email: session?.user?.email || "",
+      name: user?.name || "",
+      username: user?.username || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
     },
   });
 
@@ -65,6 +67,20 @@ export default function ProfileForm() {
 
         <FormField
           control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("profile.form.usernameLabel")}</FormLabel>
+              <FormControl>
+                <Input placeholder={t("profile.username")} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
@@ -75,6 +91,20 @@ export default function ProfileForm() {
                   placeholder={t("profile.email")}
                   {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("profile.form.phoneLabel")}</FormLabel>
+              <FormControl>
+                <Input type="tel" placeholder={t("profile.phone")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

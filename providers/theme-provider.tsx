@@ -1,8 +1,9 @@
 "use client";
 
+import { ENUMs } from "@/lib/enums";
+import { getCookie } from "cookies-next/client";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useEffect, useState } from "react";
-import { getCookie } from "@/lib/config/cookie.config";
 import type { ComponentProps } from "react";
 
 export function ThemeProvider({
@@ -13,7 +14,7 @@ export function ThemeProvider({
 
   useEffect(() => {
     setMounted(true);
-    const savedTheme = getCookie("theme");
+    const savedTheme = getCookie(ENUMs.GLOBAL.THEME_COOKIE);
     if (savedTheme && (savedTheme === "dark" || savedTheme === "light")) {
       document.documentElement.classList.toggle("dark", savedTheme === "dark");
     }

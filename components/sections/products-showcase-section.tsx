@@ -48,14 +48,14 @@ export default function ProductsShowcaseSection() {
       <div className="text-center mb-16 space-y-4">
         <AnimateOnScroll animation="fade-up">
           <h2 className="text-4xl md:text-5xl font-bold">
-            {t("productsShowcase.title", "Featured Products")}
+            {t("productsShowcase.title", "Recent Listings")}
           </h2>
         </AnimateOnScroll>
         <AnimateOnScroll animation="fade-up" delay={0.2}>
           <p className="text-lg text-muted-foreground">
             {t(
               "productsShowcase.subtitle",
-              "Discover our handpicked selection of premium products"
+              "Browse items listed by our community members"
             )}
           </p>
         </AnimateOnScroll>

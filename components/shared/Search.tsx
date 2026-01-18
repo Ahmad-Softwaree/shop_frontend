@@ -1,62 +1,48 @@
 "use client";
 
-import { ENUMs } from "@/lib/enums";
-import { Search as SearchIcon, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "../ui/input";
-import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
-import { useTranslation } from "react-i18next";
-import { useAppQueryParams } from "@/hooks/useAppQuery";
+import { Search as SearchIcon, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const Search = ({
-  className,
-  placeholder,
-  ...props
-}: React.PropsWithChildren<React.ComponentProps<"input">>) => {
-  const { t } = useTranslation();
+export default function Search({ className, placeholder }: any) {
+  const router = useRouter();
+  const params = useSearchParams();
 
-  const { queries, setQueries } = useAppQueryParams();
-  const search = queries.search || "";
+  const search = params.get("search") || "";
+
+  const updateSearch = (value: string) => {
+    const newParams = new URLSearchParams(params.toString());
+    if (value) newParams.set("search", value);
+    else newParams.delete("search");
+    newParams.set("page", "1"); // reset pagination
+    router.replace(`?${newParams.toString()}`);
+  };
 
   return (
     <div className="relative w-full">
       <Input
-        onChange={(e) =>
-          setQueries((prev) => ({
-            ...prev,
-            [ENUMs.PARAMS.SEARCH]: e.target.value,
-          }))
-        }
         value={search}
-        placeholder={placeholder ?? t("common.search")}
+        onChange={(e) => updateSearch(e.target.value)}
+        placeholder={placeholder}
         className={cn(className, "pe-10")}
-        type="text"
-        {...props}
       />
 
-      {search === "" && (
+      {search === "" ? (
         <Button
           variant="link"
-          className="absolute top-1/2 transform -translate-y-1/2 text-muted-foreground end-0">
+          className="absolute end-0 top-1/2 -translate-y-1/2">
           <SearchIcon />
         </Button>
-      )}
-
-      {search !== "" && (
+      ) : (
         <Button
-          onClick={() =>
-            setQueries((prev) => ({
-              ...prev,
-              [ENUMs.PARAMS.SEARCH]: "",
-            }))
-          }
           variant="ghost"
-          className="absolute top-1/2 transform -translate-y-1/2 text-muted-foreground end-0">
+          className="absolute end-0 top-1/2 -translate-y-1/2"
+          onClick={() => updateSearch("")}>
           <X />
         </Button>
       )}
     </div>
   );
-};
-
-export default Search;
+}
