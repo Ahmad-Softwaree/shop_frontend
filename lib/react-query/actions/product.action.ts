@@ -144,28 +144,6 @@ export const deleteProduct = async (id: string): Promise<CRUDReturn> => {
   }
 };
 
-export const buyProduct = async (id: string): Promise<CRUDReturn> => {
-  try {
-    const authCheck = await unAuthorized();
-    if (authCheck && (authCheck as any).__isError) return authCheck as any;
-
-    const data = await post(
-      `${URLs.BUY_PRODUCT(id)}`,
-      {},
-      {
-        tags: [ENUMs.TAGS.PRODUCTS],
-      }
-    );
-    if (data && (data as any).__isError) return data as any;
-
-    revalidatePath(ENUMs.PAGES.PRODUCTS);
-    revalidatePath(`${ENUMs.PAGES.PRODUCTS}/${id}`);
-    return data;
-  } catch (error) {
-    return handleServerError(error) as any;
-  }
-};
-
 export const markAvailable = async (id: string): Promise<CRUDReturn> => {
   try {
     const authCheck = await unAuthorized();

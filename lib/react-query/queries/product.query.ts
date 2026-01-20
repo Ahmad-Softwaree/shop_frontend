@@ -8,7 +8,6 @@ import {
   addProduct,
   updateProduct,
   deleteProduct,
-  buyProduct,
   markAvailable,
 } from "../actions/product.action";
 import { QUERY_KEYS } from "../keys";
@@ -84,27 +83,6 @@ export const useDeleteProduct = () => {
     },
     onError: (error: Error) => {
       handleMutationError(error, t, "errors.productDelete", (msg) =>
-        toast.error(msg)
-      );
-    },
-  });
-};
-
-export const useBuyProduct = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const result = await buyProduct(id);
-      return throwIfError(result);
-    },
-    onSuccess: () => {
-      toast.success(t("products.buySuccess"));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PRODUCTS] });
-    },
-    onError: (error: Error) => {
-      handleMutationError(error, t, "errors.productBuy", (msg) =>
         toast.error(msg)
       );
     },
