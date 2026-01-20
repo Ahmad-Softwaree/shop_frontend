@@ -39,13 +39,9 @@ export default function ProductsGrid({
         token: session.data?.jwt,
       },
     });
-    socket.on("connect", () => {
-      console.log("Connected to WebSocket server");
-    });
-    console.log(socket);
+    socket.on("connect", () => {});
 
     socket.on("productUpdate", async () => {
-      console.log("WebSocket connection established");
       await revalidateProducts();
     });
 

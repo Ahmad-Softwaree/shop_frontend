@@ -85,8 +85,6 @@ export const useLogin = () => {
       router.refresh();
     },
     onError: (error: any, variables) => {
-      console.log("onError reached:", error?.message);
-
       if (error.message === "ACCOUNT_NOT_VERIFIED") {
         toast.info(t("messages.accountNotVerified"));
         router.push(

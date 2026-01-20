@@ -60,9 +60,26 @@ This file contains **strict coding standards and architecture patterns** for the
 
 #### **Data Fetching & State Management**
 
-- **Server Actions** - For form submissions and mutations
-- **React Server Components (RSC)** - Default for data fetching
+- **Server Actions** (`"use server"`) - For all data mutations and form submissions
+- **React Query (@tanstack/react-query)** - Client-side state management (ONLY via Server Actions, never direct API calls)
+- **React Server Components (RSC)** - Default for initial data fetching
 - **Static Data** - For demo/placeholder content during development
+
+**CRITICAL Server Actions Pattern:**
+
+- Server Actions MUST be in `lib/react-query/actions/*.ts` files
+- Server Actions MUST return plain objects (serializable data only)
+- Server Actions MUST use error objects with `__isError` flag
+- Server Actions MUST check for `__isError` at each async step
+- See `docs/data-fetching-error-handling.md` for complete architecture
+
+**CRITICAL React Query Pattern:**
+
+- React Query hooks MUST be in `lib/react-query/queries/*.ts` files
+- Mutations MUST use Server Actions as `mutationFn`
+- Mutations MUST call `throwIfError(result)` to convert error objects to Error instances
+- NEVER make direct fetch/axios calls in mutations
+- See `docs/data-fetching-error-handling.md` for examples
 
 #### **Framework & Core**
 
@@ -172,6 +189,77 @@ npx shadcn@latest add dialog
 
 ---
 
+## 🔄 Data Fetching & Error Handling Architecture
+
+**See:** [docs/data-fetching-error-handling.md](docs/data-fetching-error-handling.md)
+
+This project uses a **unique three-layer architecture** for data fetching:
+
+1. **API Layer** (`lib/config/api.config.ts`) - Fetch wrappers that return error objects
+2. **Server Actions Layer** (`lib/react-query/actions/*.ts`) - Server-side mutations with `"use server"`
+3. **React Query Layer** (`lib/react-query/queries/*.ts`) - Client-side hooks that throw errors
+
+### Critical Rules:
+
+**Server Actions (`lib/react-query/actions/*.ts`):**
+
+- ✅ MUST have `"use server"` directive at the top
+- ✅ MUST return plain objects only (no Error instances)
+- ✅ MUST check for `__isError` flag at each async operation
+- ✅ MUST return error objects with `__isError: true` on failure
+- ❌ NEVER throw errors in Server Actions (not serializable)
+- ❌ NEVER use try/catch in Server Actions (return error objects instead)
+
+**React Query Mutations (`lib/react-query/queries/*.ts`):**
+
+- ✅ MUST use Server Actions as `mutationFn`
+- ✅ MUST call `throwIfError(result)` after Server Action returns
+- ✅ MUST import `throwIfError` from `@/lib/error-handler`
+- ✅ MUST use `onError` handler to show toast notifications
+- ❌ NEVER make direct fetch/axios calls
+- ❌ NEVER handle errors in Server Actions (handle in React Query)
+
+**Example Pattern:**
+
+```typescript
+// ❌ WRONG - Server Action
+"use server";
+export async function login(data: LoginFormData) {
+  const result = await post(URLs.LOGIN, data);
+  if (result.__isError) {
+    throw new Error(result.message); // ❌ Can't serialize Error!
+  }
+  return result;
+}
+
+// ✅ CORRECT - Server Action
+("use server");
+export async function login(data: LoginFormData) {
+  const result = await post(URLs.LOGIN, data);
+  if (result && (result as any).__isError) {
+    return result; // ✅ Return error object
+  }
+  return result;
+}
+
+// ✅ CORRECT - React Query Hook
+export const useLogin = () => {
+  const { i18n } = useTranslation();
+  return useMutation({
+    mutationFn: async (data: LoginFormData) => {
+      await loginMiddleware(i18n, data);
+      const result = await login(data);
+      return throwIfError(result); // ✅ Throw here (client-side)
+    },
+    onError: (error: ApiError) => {
+      showToast("error", error.message); // ✅ Toast works!
+    },
+  });
+};
+```
+
+---
+
 ## ✅ Pre-Flight Checklist
 
 Before writing ANY code:
@@ -181,6 +269,14 @@ Before writing ANY code:
 - [ ] Am I using ONLY approved libraries?
 - [ ] Do I need to install a new shadcn/ui component?
 - [ ] Am I using NextAuth.js for authentication?
+- [ ] Am I using Server Actions + React Query for data mutations?
+
+### Data Fetching
+
+- [ ] Is this a Server Action? Does it have `"use server"`?
+- [ ] Am I returning error objects with `__isError` flag?
+- [ ] Am I using `throwIfError()` in React Query mutations?
+- [ ] Did I check for `__isError` at each async step?
 
 ### Components
 

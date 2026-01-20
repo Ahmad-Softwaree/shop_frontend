@@ -53,11 +53,13 @@ bun dev
 - **Styling:** Tailwind CSS 4
 - **UI Components:** shadcn/ui
 - **Authentication:** NextAuth.js v5
+- **Data Fetching:** Server Actions + React Query
 - **Payment:** Stripe
 - **i18n:** i18next + react-i18next
 - **Icons:** Lucide React
 - **Animations:** Framer Motion
 - **Package Manager:** Bun
+- **Error Handling:** Custom serializable error system
 
 ## 📁 Project Structure
 
@@ -107,7 +109,39 @@ Supported languages:
 
 Use i18next for all text translations.
 
-## 📝 License
+## � Data Fetching & Error Handling
+
+This project uses a **unique architecture** combining Server Actions with React Query:
+
+- **Server Actions** (`"use server"`) - Server-side data mutations
+- **React Query** - Client-side state management and caching
+- **Serializable Error Pattern** - Production-ready error handling with `__isError` flag
+- **throwIfError()** - Client-side error throwing for proper React Query integration
+
+**Key Files:**
+
+- `lib/config/api.config.ts` - Fetch wrappers with error serialization
+- `lib/error-handler.ts` - Error processing and `throwIfError()` helper
+- `lib/react-query/actions/*.ts` - Server Actions that return error objects
+- `lib/react-query/queries/*.ts` - React Query hooks that throw errors
+
+**See:** [docs/data-fetching-error-handling.md](docs/data-fetching-error-handling.md) for complete architecture explanation.
+
+## 📚 Documentation
+
+### Core Architecture
+
+- **[Data Fetching & Error Handling](docs/data-fetching-error-handling.md)** - Server Actions, React Query, and error management
+- **[Component Organization](docs/component-organization.md)** - Component structure and folder organization
+- **[UI Components](docs/ui-components.md)** - shadcn/ui component usage
+- **[Authentication](docs/authentication.md)** - NextAuth.js setup and patterns
+- **[Cookie Management](docs/cookie-management.md)** - cookies-next usage
+- **[Internationalization](docs/internationalization.md)** - i18next setup
+- **[Theme (Dark/Light Mode)](docs/theme-dark-light-mode.md)** - next-themes configuration
+- **[Backend Token Setup](docs/backend-token-setup.md)** - JWT token handling
+- **[Backend Token Usage](docs/backend-token-usage.md)** - Token usage patterns
+
+## �📝 License
 
 This project is private and proprietary.
 

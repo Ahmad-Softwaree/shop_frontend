@@ -25,7 +25,6 @@ const UpdatePasswordPage = async ({
       tokenIsValid = true;
     }
   } catch (err: any) {
-    console.log("Token validation error:", err);
     tokenIsValid = false;
   }
 
