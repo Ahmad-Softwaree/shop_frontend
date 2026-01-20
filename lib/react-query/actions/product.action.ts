@@ -18,7 +18,9 @@ export const getProducts = async (
   params?: NextUrlParams
 ): Promise<PaginationObject<Product>> => {
   try {
-    await unAuthorized();
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
+
     const queryParams = new URLSearchParams();
     if (params?.page) queryParams.append("page", params.page.toString());
     if (params?.limit) queryParams.append("limit", params.limit.toString());
@@ -32,9 +34,10 @@ export const getProducts = async (
       tags: [ENUMs.TAGS.PRODUCTS],
       revalidate: 0,
     });
+    if (response && (response as any).__isError) return response;
     return response;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };
 
@@ -43,7 +46,9 @@ export const getUserProducts = async (
   params?: NextUrlParams
 ): Promise<PaginationObject<Product>> => {
   try {
-    await unAuthorized();
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
+
     const queryParams = new URLSearchParams();
     if (params?.page) queryParams.append("page", params.page.toString());
     if (params?.limit) queryParams.append("limit", params.limit.toString());
@@ -57,15 +62,18 @@ export const getUserProducts = async (
       tags: [ENUMs.TAGS.PRODUCTS],
       revalidate: 0,
     });
+    if (response && (response as any).__isError) return response;
     return response;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };
 
 export const getProductById = async (id: string): Promise<Product> => {
   try {
-    await unAuthorized();
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
+
     const response = await get<{ message: string; data: Product }>(
       URLs.PRODUCT_BY_ID(id),
       {
@@ -73,24 +81,27 @@ export const getProductById = async (id: string): Promise<Product> => {
         revalidate: 0,
       }
     );
+    if (response && (response as any).__isError) return response as any;
     return response.data;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };
 
 export const addProduct = async (formData: FormData): Promise<CRUDReturn> => {
   try {
-    await unAuthorized();
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
 
-    const { data } = await post(URLs.PRODUCTS, formData, {
+    const result = await post(URLs.PRODUCTS, formData, {
       tags: [ENUMs.TAGS.PRODUCTS],
     });
+    if (result && (result as any).__isError) return result as any;
 
     revalidatePath(ENUMs.PAGES.PRODUCTS);
-    return data;
+    return result.data;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };
 
@@ -99,38 +110,45 @@ export const updateProduct = async (
   formData: FormData
 ): Promise<CRUDReturn> => {
   try {
-    await unAuthorized();
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
 
-    const { data } = await update(URLs.PRODUCT_BY_ID(id), formData, {
+    const result = await update(URLs.PRODUCT_BY_ID(id), formData, {
       tags: [ENUMs.TAGS.PRODUCTS],
     });
+    if (result && (result as any).__isError) return result as any;
 
     revalidatePath(ENUMs.PAGES.PRODUCTS);
     revalidatePath(`${ENUMs.PAGES.PRODUCTS}/${id}`);
-    return data;
+    return result.data;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };
 
 export const deleteProduct = async (id: string): Promise<CRUDReturn> => {
   try {
-    await unAuthorized();
-    const { data } = await del(URLs.PRODUCTS, id, {
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
+
+    const result = await del(URLs.PRODUCTS, id, {
       tags: [ENUMs.TAGS.PRODUCTS],
     });
+    if (result && (result as any).__isError) return result as any;
 
     revalidatePath(ENUMs.PAGES.PRODUCTS);
     revalidatePath(`${ENUMs.PAGES.PRODUCTS}/${id}`);
-    return data;
+    return result.data;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };
 
 export const buyProduct = async (id: string): Promise<CRUDReturn> => {
   try {
-    await unAuthorized();
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
+
     const data = await post(
       `${URLs.BUY_PRODUCT(id)}`,
       {},
@@ -138,18 +156,21 @@ export const buyProduct = async (id: string): Promise<CRUDReturn> => {
         tags: [ENUMs.TAGS.PRODUCTS],
       }
     );
+    if (data && (data as any).__isError) return data as any;
 
     revalidatePath(ENUMs.PAGES.PRODUCTS);
     revalidatePath(`${ENUMs.PAGES.PRODUCTS}/${id}`);
     return data;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };
 
 export const markAvailable = async (id: string): Promise<CRUDReturn> => {
   try {
-    await unAuthorized();
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
+
     const data = await update(
       `${URLs.MARK_AVAILABLE(id)}`,
       {},
@@ -157,11 +178,12 @@ export const markAvailable = async (id: string): Promise<CRUDReturn> => {
         tags: [ENUMs.TAGS.PRODUCTS],
       }
     );
+    if (data && (data as any).__isError) return data as any;
 
     revalidatePath(ENUMs.PAGES.PRODUCTS);
     revalidatePath(`${ENUMs.PAGES.PRODUCTS}/${id}`);
     return data;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };

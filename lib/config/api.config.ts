@@ -76,8 +76,14 @@ export async function get<T = any>(
   if (!response.ok) {
     const error = await response.json().catch(() => ({
       message: response.statusText,
+      statusCode: response.status,
     }));
-    throw new Error(error.message || "Request failed");
+    // Return error object instead of throwing - Server Actions need serializable data
+    return {
+      __isError: true,
+      ...error,
+      statusCode: error.statusCode || response.status,
+    } as any;
   }
 
   return response.json();
@@ -106,8 +112,14 @@ export async function post<T = any>(
   if (!response.ok) {
     const error = await response.json().catch(() => ({
       message: response.statusText,
+      statusCode: response.status,
     }));
-    throw error;
+    // Return error object instead of throwing - Server Actions need serializable data
+    return {
+      __isError: true,
+      ...error,
+      statusCode: error.statusCode || response.status,
+    } as any;
   }
 
   return response.json();
@@ -138,8 +150,14 @@ export async function update<T = any>(
   if (!response.ok) {
     const error = await response.json().catch(() => ({
       message: response.statusText,
+      statusCode: response.status,
     }));
-    throw new Error(error.message || "Request failed");
+    // Return error object instead of throwing - Server Actions need serializable data
+    return {
+      __isError: true,
+      ...error,
+      statusCode: error.statusCode || response.status,
+    } as any;
   }
 
   return response.json();
@@ -161,8 +179,14 @@ export async function del<T = any>(
   if (!response.ok) {
     const error = await response.json().catch(() => ({
       message: response.statusText,
+      statusCode: response.status,
     }));
-    throw new Error(error.message || "Request failed");
+    // Return error object instead of throwing - Server Actions need serializable data
+    return {
+      __isError: true,
+      ...error,
+      statusCode: error.statusCode || response.status,
+    } as any;
   }
 
   return response.json();

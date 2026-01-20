@@ -13,14 +13,18 @@ export const updateProfile = async (form: {
   email: string;
 }): Promise<CRUDReturn> => {
   try {
-    await unAuthorized();
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
+
     let session = await auth();
-    const { data } = await update(
+    const result = await update(
       URLs.UPDATE_PROFILE(session?.user?.id || ""),
       form
     );
-    return data;
+    if (result && (result as any).__isError) return result as any;
+
+    return result.data;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };

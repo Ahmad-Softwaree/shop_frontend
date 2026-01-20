@@ -30,12 +30,15 @@ import { ChangePasswordSchema } from "@/validation/change_password.validation";
 import { PasswordResetSchema } from "@/validation/password_reset.validation";
 import { UpdatePasswordSchema } from "@/validation/update_password.validation";
 import { QUERY_KEYS } from "../keys";
-import { ApiError, handleMutationError } from "@/lib/error-handler";
+import { handleMutationError, throwIfError } from "@/lib/error-handler";
 
 export const useGetAuth = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.AUTH],
-    queryFn: () => getAuth(),
+    queryFn: async () => {
+      const result = await getAuth();
+      return throwIfError(result);
+    },
   });
 };
 
@@ -46,7 +49,8 @@ export const useRegister = () => {
   return useMutation({
     mutationFn: async (data: RegisterSchema) => {
       await registerMiddleware(i18n, data);
-      return await register(data);
+      const result = await register(data);
+      return throwIfError(result);
     },
     onSuccess: (data, variables) => {
       toast.success(t("messages.registerSuccess"));
@@ -71,7 +75,8 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: async (data: LoginSchema) => {
       await loginMiddleware(i18n, data);
-      return await login(data);
+      const result = await login(data);
+      return throwIfError(result);
     },
     onSuccess: async (data: any) => {
       await update();
@@ -109,7 +114,8 @@ export const useCheckLoginOtp = () => {
       email: string;
       password: string;
     }) => {
-      return await checkLoginOtp(data);
+      const result = await checkLoginOtp(data);
+      return throwIfError(result);
     },
     onSuccess: async () => {
       await update();
@@ -129,7 +135,8 @@ export const useLogout = () => {
   const { t } = useTranslation();
   return useMutation({
     mutationFn: async () => {
-      return await logout();
+      const result = await logout();
+      return throwIfError(result);
     },
     onSuccess: () => {
       toast.success(t("messages.logoutSuccess"));
@@ -147,7 +154,8 @@ export const useChangePassword = () => {
   const { update } = useSession();
   return useMutation({
     mutationFn: async (data: ChangePasswordSchema) => {
-      return await changePassword(data);
+      const result = await changePassword(data);
+      return throwIfError(result);
     },
     onSuccess: async () => {
       toast.success(t("changePassword.success"));
@@ -166,7 +174,8 @@ export const usePasswordReset = () => {
   const { t } = useTranslation();
   return useMutation({
     mutationFn: async (data: PasswordResetSchema) => {
-      return await passwordReset(data);
+      const result = await passwordReset(data);
+      return throwIfError(result);
     },
     onSuccess: async () => {
       toast.success(t("messages.passwordResetSuccess"));
@@ -183,7 +192,8 @@ export const useUpdatePassword = () => {
   const { t } = useTranslation();
   return useMutation({
     mutationFn: async (data: UpdatePasswordSchema & { token: string }) => {
-      return await updatePassword(data);
+      const result = await updatePassword(data);
+      return throwIfError(result);
     },
     onSuccess: () => {
       toast.success(t("messages.updatePasswordSuccess"));
@@ -203,7 +213,8 @@ export const useActivate2FA = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (form: { code: string }) => {
-      return await activate2FA(form);
+      const result = await activate2FA(form);
+      return throwIfError(result);
     },
     onSuccess: async () => {
       toast.success(t("messages.activate2FASuccess"));
@@ -223,7 +234,8 @@ export const useDisable2FA = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      return await deactivate2FA();
+      const result = await deactivate2FA();
+      return throwIfError(result);
     },
     onSuccess: async () => {
       toast.success(t("messages.deactivate2FASuccess"));
@@ -245,7 +257,8 @@ export const useVerifyOtp = (options?: {
   const { t } = useTranslation();
   return useMutation({
     mutationFn: async (data: { email: string; code: string }) => {
-      return await verifyOtp(data);
+      const result = await verifyOtp(data);
+      return throwIfError(result);
     },
     onSuccess: async () => {
       toast.success(
@@ -268,7 +281,8 @@ export const useResendOtp = (options?: {
   const { t } = useTranslation();
   return useMutation({
     mutationFn: async (data: { email: string }) => {
-      return await resendOtp(data);
+      const result = await resendOtp(data);
+      return throwIfError(result);
     },
     onSuccess: async () => {
       toast.success(

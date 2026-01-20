@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { updateProfile } from "@/lib/react-query/actions/profile.action";
 import { useModalStore } from "@/lib/store/modal.store";
 import { useSession } from "next-auth/react";
-import { handleMutationError } from "@/lib/error-handler";
+import { handleMutationError, throwIfError } from "@/lib/error-handler";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "../keys";
 
@@ -22,7 +22,10 @@ export const useUpdateProfile = ({
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (form: { name: string; email: string }) => updateProfile(form),
+    mutationFn: async (form: { name: string; email: string }) => {
+      const result = await updateProfile(form);
+      return throwIfError(result);
+    },
     onSuccess: async () => {
       toast.success(successMessage || t("profile.updateSuccess"));
       closeModal();

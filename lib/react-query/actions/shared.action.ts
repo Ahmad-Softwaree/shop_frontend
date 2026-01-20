@@ -12,13 +12,14 @@ export async function deleteOldImage(
   tags: TAGs[]
 ): Promise<{ success: boolean; message?: string }> {
   try {
-    await del(
+    const result = await del(
       `${URLs.DELETE_OLD_IMAGE}?table=${table}&bucket=${bucket}&id=${id}`,
       "",
       { tags }
     );
+    if (result && (result as any).__isError) return result as any;
     return { success: true };
   } catch (error: any) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 }

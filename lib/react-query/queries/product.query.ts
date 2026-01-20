@@ -12,7 +12,7 @@ import {
   markAvailable,
 } from "../actions/product.action";
 import { QUERY_KEYS } from "../keys";
-import { handleMutationError } from "@/lib/error-handler";
+import { handleMutationError, throwIfError } from "@/lib/error-handler";
 import { ENUMs } from "@/lib/enums";
 
 export const useAddProduct = () => {
@@ -22,7 +22,8 @@ export const useAddProduct = () => {
 
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      return await addProduct(formData);
+      const result = await addProduct(formData);
+      return throwIfError(result);
     },
     onSuccess: () => {
       toast.success(t("products.createSuccess"));
@@ -50,7 +51,8 @@ export const useUpdateProduct = () => {
       id: string;
       formData: FormData;
     }) => {
-      return await updateProduct(id, formData);
+      const result = await updateProduct(id, formData);
+      return throwIfError(result);
     },
     onSuccess: (_, variables) => {
       toast.success(t("products.updateSuccess"));
@@ -72,7 +74,8 @@ export const useDeleteProduct = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      return await deleteProduct(id);
+      const result = await deleteProduct(id);
+      return throwIfError(result);
     },
     onSuccess: () => {
       toast.success(t("products.deleteSuccess"));
@@ -93,7 +96,8 @@ export const useBuyProduct = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      return await buyProduct(id);
+      const result = await buyProduct(id);
+      return throwIfError(result);
     },
     onSuccess: () => {
       toast.success(t("products.buySuccess"));
@@ -113,7 +117,8 @@ export const useMarkAvailable = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      return await markAvailable(id);
+      const result = await markAvailable(id);
+      return throwIfError(result);
     },
     onSuccess: () => {
       toast.success(t("products.markAvailableSuccess"));

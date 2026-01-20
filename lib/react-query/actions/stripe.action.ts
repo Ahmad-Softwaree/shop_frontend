@@ -1,3 +1,4 @@
+"use server";
 import { post } from "../../config/api.config";
 import { ENUMs } from "../../enums";
 import { handleServerError } from "../../error-handler";
@@ -8,7 +9,9 @@ export const checkout = async (
   productId: number
 ): Promise<{ url?: string }> => {
   try {
-    await unAuthorized();
+    const authCheck = await unAuthorized();
+    if (authCheck && (authCheck as any).__isError) return authCheck as any;
+
     const data = await post<{ url?: string }>(
       `${URLs.CHECKOUT}`,
       { productId },
@@ -16,8 +19,9 @@ export const checkout = async (
         tags: [ENUMs.TAGS.PRODUCTS],
       }
     );
+    if (data && (data as any).__isError) return data;
     return data;
   } catch (error) {
-    handleServerError(error);
+    return handleServerError(error) as any;
   }
 };

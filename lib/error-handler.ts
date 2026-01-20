@@ -1,4 +1,5 @@
 export type SerializableError = {
+  __isError?: boolean;
   statusCode: number;
   message: string;
   errorCode?: string;
@@ -22,7 +23,18 @@ export class ApiError extends Error {
   }
 }
 
-export function handleServerError(error: unknown): never {
+/**
+ * Checks if a Server Action response is an error object and throws it as ApiError
+ * This is necessary because Server Actions can't throw Error instances - they must return plain objects
+ */
+export function throwIfError<T>(data: T): T {
+  if (data && typeof data === "object" && (data as any).__isError) {
+    throw new ApiError(data as any);
+  }
+  return data;
+}
+
+export function handleServerError(error: unknown): SerializableError {
   console.error("handleServerError received:", error);
 
   if (typeof error === "object" && error !== null) {
@@ -47,43 +59,48 @@ export function handleServerError(error: unknown): never {
 
       const allMessages = validationErrors.flatMap((e) => e.messages);
 
-      throw new ApiError({
+      return {
+        __isError: true,
         statusCode,
         message: allMessages[0] || "errors.validationFailed",
         details: allMessages,
         fields: validationErrors,
-      });
+      } as any;
     }
 
     // --- Case 2: message is array ---
     if (Array.isArray(message)) {
-      throw new ApiError({
+      return {
+        __isError: true,
         statusCode,
         message: message[0],
         details: message,
-      });
+      } as any;
     }
 
     // --- Case 3: message is string ---
     if (typeof message === "string") {
-      throw new ApiError({
+      return {
+        __isError: true,
         statusCode,
         message,
         errorCode,
-      });
+      } as any;
     }
 
     // --- Unknown shape ---
-    throw new ApiError({
+    return {
+      __isError: true,
       statusCode,
       message: "errors.unknownServerShape",
-    });
+    } as any;
   }
 
-  throw new ApiError({
+  return {
+    __isError: true,
     statusCode: 500,
     message: "errors.unknownError",
-  });
+  } as any;
 }
 
 export function handleMutationError(
