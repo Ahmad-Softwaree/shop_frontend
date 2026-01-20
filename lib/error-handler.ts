@@ -59,6 +59,7 @@ export function handleServerError(error: unknown): never {
         message: responseData.message,
         errorCode,
       };
+      console.log('before thrwoning from error-handler', errorObject)
       throw new Error(JSON.stringify(errorObject));
     }
 

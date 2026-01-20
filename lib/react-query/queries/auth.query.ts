@@ -80,6 +80,7 @@ export const useLogin = () => {
       router.refresh();
     },
     onError: (error: any, variables) => {
+      console.log("onError before parse", error);
       const errorMsg = JSON.parse(error.message);
 
       // Handle specific error codes
