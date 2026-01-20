@@ -6,95 +6,88 @@ export type SerializableError = {
   fields?: Array<{ field: string; messages: string[] }>;
 };
 
-export function handleServerError(error: unknown): never {
-  console.log("handleServerError received:", error);
+export class ApiError extends Error {
+  statusCode: number;
+  errorCode?: string;
+  details?: string[];
+  fields?: Array<{ field: string; messages: string[] }>;
 
-  // 1) Fetch throws plain object → treat it directly
+  constructor(data: SerializableError) {
+    super(data.message);
+    this.name = "ApiError";
+    this.statusCode = data.statusCode;
+    this.errorCode = data.errorCode;
+    this.details = data.details;
+    this.fields = data.fields;
+  }
+}
+
+export function handleServerError(error: unknown): never {
+  console.error("handleServerError received:", error);
+
   if (typeof error === "object" && error !== null) {
     const anyErr = error as any;
 
     const statusCode = anyErr.statusCode ?? 500;
     const errorCode = anyErr.errorCode;
-    const responseData = anyErr;
+    const message = anyErr.message;
 
-    // --- Case 1: Validation Errors (422) ---
+    // --- Case 1: Validation errors (422) ---
     if (
       statusCode === 422 &&
-      Array.isArray(responseData.message) &&
-      responseData.message.length > 0 &&
-      typeof responseData.message[0] === "object" &&
-      "field" in responseData.message[0]
+      Array.isArray(message) &&
+      message.length > 0 &&
+      typeof message[0] === "object" &&
+      "field" in message[0]
     ) {
-      const validationErrors = responseData.message as Array<{
+      const validationErrors = message as Array<{
         field: string;
         messages: string[];
       }>;
 
-      const allMessages = validationErrors.flatMap((err) => err.messages);
+      const allMessages = validationErrors.flatMap((e) => e.messages);
 
-      const errorObject: SerializableError = {
+      throw new ApiError({
         statusCode,
         message: allMessages[0] || "errors.validationFailed",
         details: allMessages,
         fields: validationErrors,
-      };
-
-      throw new Error(JSON.stringify(errorObject));
+      });
     }
 
     // --- Case 2: message is array ---
-    if (Array.isArray(responseData.message)) {
-      const errorObject: SerializableError = {
+    if (Array.isArray(message)) {
+      throw new ApiError({
         statusCode,
-        message: responseData.message[0],
-        details: responseData.message,
-      };
-      throw new Error(JSON.stringify(errorObject));
+        message: message[0],
+        details: message,
+      });
     }
 
-    // --- Case 3: message is a string ---
-    if (typeof responseData.message === "string") {
-      const errorObject: SerializableError = {
+    // --- Case 3: message is string ---
+    if (typeof message === "string") {
+      throw new ApiError({
         statusCode,
-        message: responseData.message,
+        message,
         errorCode,
-      };
-      console.log('before thrwoning from error-handler', errorObject)
-      throw new Error(JSON.stringify(errorObject));
+      });
     }
 
-    // --- Unknown shape but still object ---
-    throw new Error(
-      JSON.stringify({
-        statusCode,
-        message: "errors.unknownServerShape",
-      } as SerializableError)
-    );
+    // --- Unknown shape ---
+    throw new ApiError({
+      statusCode,
+      message: "errors.unknownServerShape",
+    });
   }
 
-  // --- Fallback if not object ---
-  throw new Error(
-    JSON.stringify({
-      statusCode: 500,
-      message: "errors.unknownError",
-    } as SerializableError)
-  );
-}
-
-export function parseServerError(error: Error): SerializableError | null {
-  try {
-    const parsed = JSON.parse(error.message);
-    if (parsed?.statusCode && parsed?.message) {
-      return parsed as SerializableError;
-    }
-    return null;
-  } catch {
-    return null;
-  }
+  throw new ApiError({
+    statusCode: 500,
+    message: "errors.unknownError",
+  });
 }
 
 export function handleMutationError(
-  error: Error,
+  error: any,
   t: any,
   fallbackKey: string,
   onError: (message: string) => void,
@@ -103,50 +96,28 @@ export function handleMutationError(
     includeFieldNames?: boolean;
   }
 ): void {
-  const parsedError = parseServerError(error);
+  // --- Validation errors ---
+  if (error.fields?.length) {
+    const showAll = options?.showAllErrors ?? true;
+    const includeField = options?.includeFieldNames ?? false;
 
-  if (parsedError) {
-    // --- Case 1: Validation errors with fields (422) ---
-    if (parsedError.fields && parsedError.fields.length > 0) {
-      const showAll = options?.showAllErrors ?? true;
-      const includeField = options?.includeFieldNames ?? false;
+    const fields = showAll ? error.fields : [error.fields[0]];
 
-      if (showAll) {
-        parsedError.fields.forEach((fieldErr) => {
-          fieldErr.messages.forEach((msg) => {
-            const translated = t(msg) || msg;
-            const finalMsg = includeField
-              ? `${fieldErr.field}: ${translated}`
-              : translated;
-            onError(finalMsg);
-          });
-        });
-      } else {
-        const f = parsedError.fields[0];
-        const firstMsg = t(f.messages[0]) || f.messages[0];
-        const finalMsg = includeField ? `${f.field}: ${firstMsg}` : firstMsg;
-        onError(finalMsg);
-      }
-      return;
-    }
-
-    // --- Case 2: Non-validation multiple messages ---
-    if (parsedError.details && parsedError.details.length > 1) {
-      const showAll = options?.showAllErrors ?? true;
-
-      if (showAll) {
-        parsedError.details.forEach((msg) => onError(t(msg) || msg));
-      } else {
-        onError(t(parsedError.message) || parsedError.message);
-      }
-      return;
-    }
-
-    // --- Case 3: single message ---
-    onError(t(parsedError.message) || parsedError.message);
+    fields.forEach((f: { field: string; messages: string[] }) => {
+      f.messages.forEach((msg) => {
+        const translated = t(msg) || msg;
+        onError(includeField ? `${f.field}: ${translated}` : translated);
+      });
+    });
     return;
   }
 
-  // --- Completely unknown error ---
-  onError(t(fallbackKey));
+  // --- Multiple messages ---
+  if (error.details?.length) {
+    error.details.forEach((msg: string) => onError(t(msg) || msg));
+    return;
+  }
+
+  // --- Single message ---
+  onError(t(error.message) || error.message);
 }

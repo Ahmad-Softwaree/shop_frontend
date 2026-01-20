@@ -103,12 +103,10 @@ export async function post<T = any>(
       : undefined,
     next: options,
   });
-  console.log(response);
   if (!response.ok) {
     const error = await response.json().catch(() => ({
       message: response.statusText,
     }));
-    console.log(error);
     throw error;
   }
 

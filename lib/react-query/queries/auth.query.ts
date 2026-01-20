@@ -30,7 +30,7 @@ import { ChangePasswordSchema } from "@/validation/change_password.validation";
 import { PasswordResetSchema } from "@/validation/password_reset.validation";
 import { UpdatePasswordSchema } from "@/validation/update_password.validation";
 import { QUERY_KEYS } from "../keys";
-import { handleMutationError } from "@/lib/error-handler";
+import { ApiError, handleMutationError } from "@/lib/error-handler";
 
 export const useGetAuth = () => {
   return useQuery({
@@ -80,11 +80,9 @@ export const useLogin = () => {
       router.refresh();
     },
     onError: (error: any, variables) => {
-      console.log("onError before parse", error);
-      const errorMsg = JSON.parse(error.message);
+      console.log("onError reached:", error?.message);
 
-      // Handle specific error codes
-      if (errorMsg.message === "ACCOUNT_NOT_VERIFIED") {
+      if (error.message === "ACCOUNT_NOT_VERIFIED") {
         toast.info(t("messages.accountNotVerified"));
         router.push(
           `${ENUMs.PAGES.AUTHENTICATION}?${ENUMs.PARAMS.EMAIL}=${variables.email}`
@@ -92,20 +90,11 @@ export const useLogin = () => {
         return;
       }
 
-      if (errorMsg.message === "TWO_FACTOR_AUTHENTICATION_REQUIRED") {
+      if (error.message === "TWO_FACTOR_AUTHENTICATION_REQUIRED") {
         toast.info(t("messages.twoFactorAuthRequired"));
         return;
       }
-
-      // Default error handling
-      if (
-        errorMsg.message != "TWO_FACTOR_AUTHENTICATION_REQUIRED" &&
-        errorMsg.message != "ACCOUNT_NOT_VERIFIED"
-      ) {
-        handleMutationError(error, t, "errors.login", (msg) =>
-          toast.error(msg)
-        );
-      }
+      handleMutationError(error, t, "errors.login", (msg) => toast.error(msg));
     },
   });
 };
