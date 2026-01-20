@@ -30,9 +30,11 @@ export default function ProductsGrid({
   totalPages,
   searchParam,
 }: ProductsGridProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const session = useSession();
-
+  useEffect(() => {
+    revalidateProducts();
+  }, [i18n.language]);
   useEffect(() => {
     const socket = io(`${process.env.NEXT_PUBLIC_API}/products` || "", {
       auth: {

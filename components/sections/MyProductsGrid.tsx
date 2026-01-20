@@ -4,6 +4,8 @@ import { Product } from "@/types/types";
 import ProductCard from "@/components/cards/ProductCard";
 import Pagination from "@/components/shared/Pagination";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+import { revalidateProducts } from "@/lib/react-query/actions/product.action";
 
 interface MyProductsGridProps {
   products: Product[];
@@ -24,8 +26,10 @@ export default function MyProductsGrid({
   searchParam,
   isLoading,
 }: MyProductsGridProps) {
-  const { t } = useTranslation();
-
+  const { t, i18n } = useTranslation();
+  useEffect(() => {
+    revalidateProducts();
+  }, [i18n.language]);
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
