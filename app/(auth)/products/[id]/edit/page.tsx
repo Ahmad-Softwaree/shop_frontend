@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import ProductForm from "@/components/forms/ProductForm";
-import { getProductById } from "@/lib/actions/product.action";
+import { getProductById } from "@/lib/react-query/actions/product.action";
 import { getServerTranslation } from "@/i18n/server";
 
 type EditProductPageProps = {

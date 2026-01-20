@@ -14,11 +14,15 @@ export const URLs = {
   DEACTIVATE_2FA: `/auth/2fa/deactivate`,
   LOGOUT: `/auth/logout`,
   VERIFY_RESET_PASSWORD_TOKEN: `/auth/verify-reset-password-token`,
+  DELETE_OLD_IMAGE: `/shared/delete_old_image`,
+  CHECKOUT: `/checkout/session`,
 
   // User endpoints
   UPDATE_PROFILE: (userId: string) => `/users/${userId}`,
 
   // Product endpoints
   PRODUCTS: `/product`,
+  BUY_PRODUCT: (id: string | number) => `/product/${id}/buy`,
+  MARK_AVAILABLE: (id: string | number) => `/product/${id}/mark-available`,
   PRODUCT_BY_ID: (id: string | number) => `/product/${id}`,
 } as const;

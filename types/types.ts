@@ -1,17 +1,3 @@
-export type PaginatedResponse<T> = {
-  data: T[];
-  nextPage: number | null;
-};
-
-export type DataTypes = {
-  id: string | number;
-  [key: string]: any;
-};
-
-export interface NoDataProps extends React.HTMLAttributes<HTMLDivElement> {
-  children?: React.ReactNode;
-}
-
 export type QueryParam = {
   page?: number | string;
   limit?: number | string;
@@ -30,4 +16,32 @@ export type User = {
   password: string;
   createdAt: string;
   updatedAt: string;
+};
+
+export type Order = {
+  id: number;
+  productId: number;
+  product: Product;
+  userId: string;
+  user: User;
+};
+
+export type Product = {
+  id: number;
+  name: string;
+  desc: string;
+  enName: string;
+  arName: string;
+  ckbName: string;
+  enDesc: string;
+  arDesc: string;
+  ckbDesc: string;
+  image: string;
+  price: number;
+  status: "AVAILABLE" | "SOLD_OUT";
+  userId: number;
+  createdAt: string;
+  updatedAt: string | null;
+  user?: User;
+  orders?: Order[];
 };

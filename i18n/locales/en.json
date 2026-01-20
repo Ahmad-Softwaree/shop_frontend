@@ -243,7 +243,8 @@
     "twoFactorAuthRequired": "Two-Factor Authentication is enabled. Please enter your code.",
     "accountNotVerified": "Please verify your account first. Check your email for the verification code.",
     "otpVerifySuccess": "Account verified successfully! You can now login.",
-    "otpResendSuccess": "Verification code has been sent to your email."
+    "otpResendSuccess": "Verification code has been sent to your email.",
+    "checkoutSuccess": "Redirecting to checkout..."
   },
   "errors": {
     "register": "Registration failed. Please try again.",
@@ -267,7 +268,13 @@
     "invalid2FACode": "Invalid authentication code. Please try again.",
     "loginOTPFailed": "Failed to verify authentication code.",
     "otpVerifyFailed": "Failed to verify code. Please try again.",
-    "otpResendFailed": "Failed to resend verification code."
+    "otpResendFailed": "Failed to resend verification code.",
+    "productCreate": "Failed to create product.",
+    "productUpdate": "Failed to update product.",
+    "productDelete": "Failed to delete product.",
+    "productBuy": "Failed to purchase product.",
+    "productMarkAvailable": "Failed to mark product as available.",
+    "checkout": "Failed to process checkout."
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -307,6 +314,22 @@
       }
     }
   },
+  "cancel": {
+    "title": "Purchase Cancelled",
+    "subtitle": "Oh no! You've cancelled your purchase",
+    "message": "We're sorry to see you go. Your payment was not processed and no charges were made to your account.",
+    "reassurance": "If you changed your mind or encountered an issue, feel free to try again anytime!",
+    "browseProducts": "Browse Products",
+    "backHome": "Back to Home"
+  },
+  "success": {
+    "title": "Purchase Successful!",
+    "subtitle": "Thank you for your purchase!",
+    "message": "Your payment has been processed successfully. You will receive a confirmation email shortly.",
+    "nextSteps": "The seller will contact you soon with further details about your purchase.",
+    "browseProducts": "Browse More Products",
+    "backHome": "Back to Home"
+  },
   "products": {
     "title": "Products",
     "description": "Manage your products",
@@ -334,6 +357,12 @@
     "description": "Description",
     "createdAt": "Created",
     "updatedAt": "Updated",
+    "filterProducts": "Filter Products",
+    "filterByStatus": "Filter products by their status",
+    "productStatus": "Product Status",
+    "allProducts": "All Products",
+    "available": "Available",
+    "soldOut": "Sold Out",
     "status": {
       "available": "Available",
       "sold_out": "Sold Out"

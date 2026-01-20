@@ -1,7 +1,7 @@
 "use server";
 import { cookies } from "next/headers";
 import { deleteCookie, getCookie, setCookie } from "cookies-next/server";
-import { ENUMs } from "../enums";
+import { ENUMs, TAGs } from "../enums";
 import { isFileForm, buildFormData } from "../functions";
 
 const baseURL = process.env.NEXT_PUBLIC_API || "/";
@@ -63,7 +63,7 @@ async function getHeaders(isFormData: boolean = false): Promise<HeadersInit> {
 
 export async function get<T = any>(
   path: string,
-  options?: { tags?: string[]; revalidate?: number | false }
+  options?: { tags?: TAGs[]; revalidate?: number | false }
 ): Promise<T> {
   const headers = await getHeaders(false);
   const response = await fetch(`${baseURL}${path}`, {
@@ -86,13 +86,12 @@ export async function get<T = any>(
 export async function post<T = any>(
   path: string,
   data?: any,
-  options?: { tags?: string[]; revalidate?: number | false }
+  options?: { tags?: TAGs[]; revalidate?: number | false }
 ): Promise<T> {
   const hasFiles = isFileForm(data);
   const formData = hasFiles ? buildFormData(data) : data;
   const isFormDataInstance = formData instanceof FormData;
   const headers = await getHeaders(isFormDataInstance);
-
   const response = await fetch(`${baseURL}${path}`, {
     method: "POST",
     credentials: "include",
@@ -117,7 +116,7 @@ export async function post<T = any>(
 export async function update<T = any>(
   path: string,
   data?: any,
-  options?: { tags?: string[]; revalidate?: number | false }
+  options?: { tags?: TAGs[]; revalidate?: number | false }
 ): Promise<T> {
   const hasFiles = isFileForm(data);
   const formData = hasFiles ? buildFormData(data) : data;
@@ -149,7 +148,7 @@ export async function update<T = any>(
 export async function del<T = any>(
   path: string,
   id: string | number,
-  options?: { tags?: string[]; revalidate?: number | false }
+  options?: { tags?: TAGs[]; revalidate?: number | false }
 ): Promise<T> {
   const headers = await getHeaders(false);
   const response = await fetch(`${baseURL}${path}/${id}`, {

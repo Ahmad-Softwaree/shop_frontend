@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Edit, Trash2, ShoppingCart, CheckCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -27,15 +26,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Product,
-  deleteProduct,
-  buyProduct,
-  markAvailable,
-} from "@/lib/actions/product.action";
-import { toast } from "sonner";
+  useDeleteProduct,
+  useMarkAvailable,
+} from "@/lib/react-query/queries/product.query";
+import { useCheckout } from "@/lib/react-query/queries/stripe.query";
 import { ENUMs } from "@/lib/enums";
 import { useSession } from "next-auth/react";
 import { imageSrc } from "@/lib/functions";
+import { Product } from "@/types/types";
 
 type ProductCardProps = {
   product: Product;
@@ -46,13 +44,13 @@ export default function ProductCard({
   product,
   showActions = false,
 }: ProductCardProps) {
-  const { t, i18n } = useTranslation();
-  const router = useRouter();
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isBuying, setIsBuying] = useState(false);
-  const [isMarkingAvailable, setIsMarkingAvailable] = useState(false);
+
+  const deleteProductMutation = useDeleteProduct();
+  const markAvailableMutation = useMarkAvailable();
+  const checkoutMutation = useCheckout();
 
   const isOwner = session?.user?.id
     ? Number(session.user.id) === product.userId
@@ -60,60 +58,26 @@ export default function ProductCard({
   const shouldShowActions = showActions && isOwner;
   const buyer = product.orders?.[0]?.user;
 
-  const currentLang = i18n.language as "en" | "ar" | "ckb";
-  const productName =
-    currentLang === "en"
-      ? product.enName
-      : currentLang === "ar"
-      ? product.arName
-      : product.ckbName;
-
-  const productDesc =
-    currentLang === "en"
-      ? product.enDesc
-      : currentLang === "ar"
-      ? product.arDesc
-      : product.ckbDesc;
-
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    try {
-      await deleteProduct(product.id.toString());
-      toast.success(t("products.deleteSuccess"));
-      router.refresh();
-    } catch (error: any) {
-      toast.error(error?.message || t("common.error"));
-    } finally {
-      setIsDeleting(false);
-      setShowDeleteDialog(false);
-    }
+  const handleDelete = () => {
+    deleteProductMutation.mutate(product.id.toString(), {
+      onSuccess: () => {
+        setShowDeleteDialog(false);
+      },
+    });
   };
 
-  const handleBuy = async () => {
-    setIsBuying(true);
-    try {
-      await buyProduct(product.id.toString());
-      toast.success(t("products.buySuccess"));
-      router.refresh();
-    } catch (error: any) {
-      toast.error(error?.message || t("common.error"));
-    } finally {
-      setIsBuying(false);
-    }
+  const handleBuy = () => {
+    // Go straight to checkout
+    checkoutMutation.mutate(product.id);
   };
 
-  const handleMarkAvailable = async () => {
-    setIsMarkingAvailable(true);
-    try {
-      await markAvailable(product.id.toString());
-      toast.success(t("products.markAvailableSuccess"));
-      router.refresh();
-    } catch (error: any) {
-      toast.error(error?.message || t("common.error"));
-    } finally {
-      setIsMarkingAvailable(false);
-    }
+  const handleMarkAvailable = () => {
+    markAvailableMutation.mutate(product.id.toString());
   };
+
+  const isDeleting = deleteProductMutation.isPending;
+  const isBuying = checkoutMutation.isPending;
+  const isMarkingAvailable = markAvailableMutation.isPending;
 
   return (
     <>
@@ -122,7 +86,7 @@ export default function ProductCard({
           <div className="relative w-full h-48">
             <Image
               src={imageSrc(product.image)}
-              alt={productName}
+              alt={product.name}
               fill
               className="object-cover"
             />
@@ -139,9 +103,9 @@ export default function ProductCard({
         </Link>
 
         <CardHeader>
-          <CardTitle className="line-clamp-1">{productName}</CardTitle>
+          <CardTitle className="line-clamp-1">{product.name}</CardTitle>
           <CardDescription className="line-clamp-2">
-            {productDesc}
+            {product.desc}
           </CardDescription>
         </CardHeader>
 
@@ -165,15 +129,11 @@ export default function ProductCard({
         {shouldShowActions && (
           <CardFooter className="gap-2 flex-col">
             <div className="flex gap-2 w-full">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={() =>
-                  router.push(`${ENUMs.PAGES.PRODUCTS}/${product.id}/edit`)
-                }>
-                <Edit className="h-4 w-4 mr-2" />
-                {t("common.edit")}
+              <Button variant="outline" size="sm" className="flex-1" asChild>
+                <Link href={`${ENUMs.PAGES.PRODUCTS}/${product.id}/edit`}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  {t("common.edit")}
+                </Link>
               </Button>
               <Button
                 variant="destructive"

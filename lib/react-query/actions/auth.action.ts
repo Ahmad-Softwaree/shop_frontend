@@ -79,7 +79,6 @@ export const checkLoginOtp = async (form: {
   try {
     await alreadyLoggedIn();
     const data = await post(URLs.CHECK_LOGIN_OTP, form);
-    console.log(data);
     await saveJWT(data.jwt);
     await signIn("credentials", {
       id: data.user.id.toString(),

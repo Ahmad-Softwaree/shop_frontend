@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Upload, X } from "lucide-react";
 import {
@@ -23,14 +22,14 @@ import {
   getProductSchema,
 } from "@/validation/product.validation";
 import {
-  addProduct,
-  updateProduct,
-  Product,
-} from "@/lib/actions/product.action";
+  useAddProduct,
+  useUpdateProduct,
+} from "@/lib/react-query/queries/product.query";
 import { toast } from "sonner";
 import { ENUMs } from "@/lib/enums";
 import { imageSrc, buildFormData } from "@/lib/functions";
-import { deleteOldImage } from "@/lib/actions/shared.action";
+import { deleteOldImage } from "@/lib/react-query/actions/shared.action";
+import { Product } from "@/types/types";
 
 type ProductFormProps = {
   product?: Product;
@@ -38,11 +37,13 @@ type ProductFormProps = {
 
 export default function ProductForm({ product }: ProductFormProps) {
   const { t, i18n } = useTranslation();
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [imagePreview, setImagePreview] = useState<string | null>(
     product?.image ? imageSrc(product.image) : null
   );
+
+  const addProductMutation = useAddProduct();
+  const updateProductMutation = useUpdateProduct();
 
   const form = useForm<ProductSchema>({
     resolver: zodResolver(getProductSchema(i18n)),
@@ -74,7 +75,9 @@ export default function ProductForm({ product }: ProductFormProps) {
     // If editing existing product with an image, delete it from server
     if (product?.id && product?.image) {
       startTransition(async () => {
-        const result = await deleteOldImage("product", "products", product.id);
+        const result = await deleteOldImage("product", "products", product.id, [
+          ENUMs.TAGS.PRODUCTS,
+        ]);
         if (result.success) {
           setImagePreview(null);
           form.setValue("image", undefined);
@@ -90,28 +93,17 @@ export default function ProductForm({ product }: ProductFormProps) {
   };
 
   const onSubmit = async (data: ProductSchema) => {
-    startTransition(async () => {
-      try {
-        const formData = buildFormData(data);
+    const formData = buildFormData(data);
 
-        let result;
-        if (product) {
-          result = await updateProduct(product.id.toString(), formData);
-        } else {
-          result = await addProduct(formData);
-        }
-
-        if (result) {
-          toast.success(
-            product ? t("products.updateSuccess") : t("products.createSuccess")
-          );
-          router.push(ENUMs.PAGES.PRODUCTS);
-        }
-      } catch (error: any) {
-        toast.error(error?.message || t("common.error"));
-      }
-    });
+    if (product) {
+      updateProductMutation.mutate({ id: product.id.toString(), formData });
+    } else {
+      addProductMutation.mutate(formData);
+    }
   };
+
+  const isLoading =
+    addProductMutation.isPending || updateProductMutation.isPending;
 
   return (
     <Form {...form}>
@@ -312,12 +304,12 @@ export default function ProductForm({ product }: ProductFormProps) {
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.back()}
-            disabled={isPending}>
+            onClick={() => window.history.back()}
+            disabled={isLoading}>
             {t("common.cancel")}
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending
+          <Button type="submit" disabled={isLoading}>
+            {isLoading
               ? t("common.loading")
               : product
               ? t("products.form.updateButton")

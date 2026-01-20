@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   Pagination as PaginationWrapper,
   PaginationContent,
@@ -14,18 +13,18 @@ import {
 type PaginationProps = {
   currentPage: number;
   totalPages: number;
-  searchParams?: string;
+  searchParam?: string;
 };
 
 export default function Pagination({
   currentPage,
   totalPages,
-  searchParams = "",
+  searchParam = "",
 }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const buildUrl = (page: number) => {
-    return `?page=${page}${searchParams ? `&${searchParams}` : ""}`;
+    return `?page=${page}${searchParam ? `&${searchParam}` : ""}`;
   };
 
   return (

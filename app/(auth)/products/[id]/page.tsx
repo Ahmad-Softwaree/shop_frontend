@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { notFound, useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { getProductById } from "@/lib/react-query/actions/product.action";
 import {
-  getProductById,
-  buyProduct,
-  deleteProduct,
-  markAvailable,
-  Product,
-} from "@/lib/actions/product.action";
+  useDeleteProduct,
+  useMarkAvailable,
+} from "@/lib/react-query/queries/product.query";
+import { useCheckout } from "@/lib/react-query/queries/stripe.query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,7 +23,6 @@ import { ENUMs } from "@/lib/enums";
 import { imageSrc } from "@/lib/functions";
 import { useTranslation } from "react-i18next";
 import { useSession } from "next-auth/react";
-import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +33,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Product } from "@/types/types";
 
 type ProductPageProps = {
   params: Promise<{
@@ -44,14 +43,14 @@ type ProductPageProps = {
 
 export default function ProductPage({ params }: ProductPageProps) {
   const { t, i18n } = useTranslation();
-  const router = useRouter();
   const { data: session } = useSession();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isBuying, setIsBuying] = useState(false);
-  const [isMarkingAvailable, setIsMarkingAvailable] = useState(false);
+
+  const deleteProductMutation = useDeleteProduct();
+  const markAvailableMutation = useMarkAvailable();
+  const checkoutMutation = useCheckout();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -68,50 +67,35 @@ export default function ProductPage({ params }: ProductPageProps) {
     fetchProduct();
   }, [params]);
 
-  const handleBuy = async () => {
+  const handleBuy = () => {
     if (!product) return;
-    setIsBuying(true);
-    try {
-      await buyProduct(product.id.toString());
-      toast.success(t("products.buySuccess"));
-      const productData = await getProductById(product.id.toString());
-      setProduct(productData);
-    } catch (error: any) {
-      toast.error(error?.message || t("common.error"));
-    } finally {
-      setIsBuying(false);
-    }
+    // Go straight to checkout
+    checkoutMutation.mutate(product.id);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!product) return;
-    setIsDeleting(true);
-    try {
-      await deleteProduct(product.id.toString());
-      toast.success(t("products.deleteSuccess"));
-      router.push(ENUMs.PAGES.PRODUCTS);
-    } catch (error: any) {
-      toast.error(error?.message || t("common.error"));
-    } finally {
-      setIsDeleting(false);
-      setShowDeleteDialog(false);
-    }
+    deleteProductMutation.mutate(product.id.toString(), {
+      onSuccess: () => {
+        setShowDeleteDialog(false);
+      },
+    });
   };
 
-  const handleMarkAvailable = async () => {
+  const handleMarkAvailable = () => {
     if (!product) return;
-    setIsMarkingAvailable(true);
-    try {
-      await markAvailable(product.id.toString());
-      toast.success(t("products.markAvailableSuccess"));
-      const productData = await getProductById(product.id.toString());
-      setProduct(productData);
-    } catch (error: any) {
-      toast.error(error?.message || t("common.error"));
-    } finally {
-      setIsMarkingAvailable(false);
-    }
+    markAvailableMutation.mutate(product.id.toString(), {
+      onSuccess: async () => {
+        // Refresh product data
+        const productData = await getProductById(product.id.toString());
+        setProduct(productData);
+      },
+    });
   };
+
+  const isDeleting = deleteProductMutation.isPending;
+  const isBuying = checkoutMutation.isPending;
+  const isMarkingAvailable = markAvailableMutation.isPending;
 
   if (isLoading) {
     return (

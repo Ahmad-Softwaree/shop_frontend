@@ -1,77 +1,47 @@
 import { Suspense } from "react";
-import { getProducts } from "@/lib/actions/product.action";
-import ProductCard from "@/components/cards/ProductCard";
+import { getProducts } from "@/lib/react-query/actions/product.action";
+import ProductsGrid from "@/components/sections/ProductsGrid";
 import Search from "@/components/shared/Search";
-import Pagination from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { ENUMs, PER_PAGE } from "@/lib/enums";
+import { ENUMs } from "@/lib/enums";
 import { getServerTranslation } from "@/i18n/server";
-
-type ProductsPageProps = {
-  searchParams: Promise<{
-    search?: string;
-    page?: string;
-  }>;
-};
+import { NextAsyncUrlParams, NextUrlParams } from "@/types/global";
+import ProductStatusFilter from "@/components/shared/ProductStatusFilter";
 
 async function ProductsContent({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; page?: string }>;
+  searchParams: NextUrlParams;
 }) {
-  const { t } = await getServerTranslation();
-  const params = await searchParams;
-  const page = Number(params.page) || 1;
-  const search = params.search || "";
-  console.log(search);
-  const productsData = await getProducts({
-    page,
-    limit: PER_PAGE,
-    search,
-  });
-
+  const productsData = await getProducts(searchParams);
   const products = productsData?.data || [];
   const totalPages = productsData?.total_page || 1;
   const currentPage = productsData?.page || 1;
 
-  return (
-    <>
-      {products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-xl text-muted-foreground mb-4">
-            {t("products.noProducts")}
-          </p>
-          <Button asChild>
-            <Link href={`${ENUMs.PAGES.PRODUCTS}/add`}>
-              <Plus className="h-4 w-4 mr-2" />
-              {t("products.addProduct")}
-            </Link>
-          </Button>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} showActions />
-            ))}
-          </div>
+  const searchParam = [
+    searchParams.search && `search=${searchParams.search}`,
+    searchParams.status && `status=${searchParams.status}`,
+  ]
+    .filter(Boolean)
+    .join("&");
 
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            searchParams={search ? `search=${search}` : ""}
-          />
-        </>
-      )}
-    </>
+  return (
+    <ProductsGrid
+      products={products}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      searchParam={searchParam}
+    />
   );
 }
 
 export default async function ProductsPage({
   searchParams,
-}: ProductsPageProps) {
+}: {
+  searchParams: NextAsyncUrlParams;
+}) {
   const { t } = await getServerTranslation();
   const params = await searchParams;
 
@@ -92,12 +62,17 @@ export default async function ProductsPage({
         </Button>
       </div>
 
-      <div className="w-full max-w-md">
-        <Search placeholder={t("products.searchPlaceholder")} />
+      <div className="w-full max-w-md flex gap-2">
+        <div className="flex-1">
+          <Search placeholder={t("products.searchPlaceholder")} />
+        </div>
+        <ProductStatusFilter />
       </div>
 
       <Suspense
-        key={`${params.search || ""}-${params.page || "1"}`}
+        key={`${params.search || ""}-${params.page || "1"}-${
+          params.status || ""
+        }`}
         fallback={
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -105,7 +80,7 @@ export default async function ProductsPage({
             ))}
           </div>
         }>
-        <ProductsContent searchParams={searchParams} />
+        <ProductsContent searchParams={params} />
       </Suspense>
     </div>
   );

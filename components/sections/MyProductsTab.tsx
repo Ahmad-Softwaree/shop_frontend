@@ -1,14 +1,13 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/lib/store/auth.store";
-import { getUserProducts, Product } from "@/lib/actions/product.action";
-import ProductCard from "@/components/cards/ProductCard";
+import { getUserProducts } from "@/lib/react-query/actions/product.action";
+import MyProductsGrid from "@/components/sections/MyProductsGrid";
 import Search from "@/components/shared/Search";
-import Pagination from "@/components/shared/Pagination";
-import { PER_PAGE } from "@/lib/enums";
+import ProductStatusFilter from "@/components/shared/ProductStatusFilter";
 import { useSearchParams } from "next/navigation";
+import { Product } from "@/types/types";
+import { ENUMs } from "@/lib/enums";
 
 export default function MyProductsTab() {
   const { t } = useTranslation();
@@ -21,6 +20,7 @@ export default function MyProductsTab() {
 
   const page = Number(searchParams.get("page")) || 1;
   const search = searchParams.get("search") || "";
+  const status = searchParams.get(ENUMs.PARAMS.STATUS) || "";
 
   useEffect(() => {
     async function fetchUserProducts() {
@@ -30,8 +30,9 @@ export default function MyProductsTab() {
       try {
         const data = await getUserProducts(user.id.toString(), {
           page,
-          limit: PER_PAGE,
+          limit: ENUMs.GLOBAL.PER_PAGE,
           search,
+          status,
         });
 
         setProducts(data.data || []);
@@ -46,45 +47,31 @@ export default function MyProductsTab() {
     }
 
     fetchUserProducts();
-  }, [user?.id, page, search]);
+  }, [user?.id, page, search, status]);
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="h-96 bg-muted animate-pulse rounded-lg" />
-        ))}
-      </div>
-    );
-  }
+  const searchParam = [
+    search && `search=${search}`,
+    status && `status=${status}`,
+  ]
+    .filter(Boolean)
+    .join("&");
 
   return (
     <div className="space-y-6">
-      <div className="w-full max-w-md">
-        <Search placeholder={t("products.searchPlaceholder")} />
+      <div className="w-full max-w-md flex gap-2">
+        <div className="flex-1">
+          <Search placeholder={t("products.searchPlaceholder")} />
+        </div>
+        <ProductStatusFilter />
       </div>
 
-      {products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-xl text-muted-foreground">
-            {t("products.noProducts")}
-          </p>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} showActions />
-            ))}
-          </div>
-
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            searchParams={search ? `search=${search}` : ""}
-          />
-        </>
-      )}
+      <MyProductsGrid
+        products={products}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        searchParam={searchParam}
+        isLoading={isLoading}
+      />
     </div>
   );
 }
