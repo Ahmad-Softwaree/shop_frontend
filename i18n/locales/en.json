@@ -104,26 +104,7 @@
       "description": "Message sellers, arrange payment (Stripe or cash), and coordinate delivery on your terms."
     }
   },
-  "productsShowcase": {
-    "title": "Recent Listings",
-    "subtitle": "Browse items listed by our community members",
-    "bestseller": "Bestseller",
-    "new": "New",
-    "trending": "Trending",
-    "addToWishlist": "Add to wishlist",
-    "addToCart": "Add to Cart",
-    "save": "Save",
-    "viewAll": "View All Products",
-    "product1": {
-      "name": "Premium Wireless Headphones"
-    },
-    "product2": {
-      "name": "Smart Fitness Watch"
-    },
-    "product3": {
-      "name": "Professional Camera Kit"
-    }
-  },
+
   "footer": {
     "rights": "All rights reserved",
     "github": "GitHub",
