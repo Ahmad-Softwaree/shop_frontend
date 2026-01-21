@@ -4,9 +4,13 @@ import { useTranslation } from "react-i18next";
 import { AnimateOnScroll } from "@/components/shared/animate";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, TrendingUp, Shield } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { ENUMs } from "@/lib/enums";
 
 export default function HeroSection() {
   const { t } = useTranslation();
+  const session = useSession();
 
   return (
     <section className="min-h-[85vh] flex items-center justify-center py-20 ">
@@ -44,11 +48,25 @@ export default function HeroSection() {
           <AnimateOnScroll animation="fade-up" delay={0.4}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
               <Button size="lg" className="min-w-48">
-                <ShoppingBag className="w-5 h-5 mr-2" />
-                {t("hero.browseItems", "Browse Items")}
+                <Link
+                  href={
+                    session?.data?.user
+                      ? ENUMs.PAGES.PRODUCTS
+                      : ENUMs.PAGES.LOGIN
+                  }>
+                  <ShoppingBag className="w-5 h-5 mr-2" />
+                  {t("hero.browseItems", "Browse Items")}
+                </Link>
               </Button>
               <Button size="lg" variant="outline" className="min-w-48">
-                {t("hero.listItem", "List Your Item")}
+                <Link
+                  href={
+                    session?.data?.user
+                      ? ENUMs.PAGES.PROFILE
+                      : ENUMs.PAGES.LOGIN
+                  }>
+                  {t("hero.listItem", "List Your Item")}
+                </Link>
               </Button>
             </div>
           </AnimateOnScroll>

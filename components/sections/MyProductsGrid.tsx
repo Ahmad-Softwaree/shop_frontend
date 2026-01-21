@@ -6,6 +6,8 @@ import Pagination from "@/components/shared/Pagination";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { revalidateProducts } from "@/lib/react-query/actions/product.action";
+import { useSession } from "next-auth/react";
+import { io } from "socket.io-client";
 
 interface MyProductsGridProps {
   products: Product[];
@@ -27,9 +29,27 @@ export default function MyProductsGrid({
   isLoading,
 }: MyProductsGridProps) {
   const { t, i18n } = useTranslation();
+  const session = useSession();
+
   useEffect(() => {
     revalidateProducts();
   }, [i18n.language]);
+  useEffect(() => {
+    const socket = io(`${process.env.NEXT_PUBLIC_API}/products` || "", {
+      auth: {
+        token: session.data?.jwt,
+      },
+    });
+    socket.on("connect", () => {});
+
+    socket.on("productUpdate", async () => {
+      await revalidateProducts();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
