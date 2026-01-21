@@ -47,7 +47,7 @@ export default function HeroSection() {
 
           <AnimateOnScroll animation="fade-up" delay={0.4}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-              <Button size="lg" className="min-w-48">
+              <Button asChild size="lg" className="min-w-48">
                 <Link
                   href={
                     session?.data?.user
@@ -58,7 +58,7 @@ export default function HeroSection() {
                   {t("hero.browseItems", "Browse Items")}
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="min-w-48">
+              <Button asChild size="lg" variant="outline" className="min-w-48">
                 <Link
                   href={
                     session?.data?.user
