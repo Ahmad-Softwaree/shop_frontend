@@ -32,6 +32,5 @@ export const ENUMs = {
 } as const;
 
 export type ENUMSs = typeof ENUMs;
-// Type for Tags from the values
 
 export type TAGs = ENUMSs["TAGS"][keyof ENUMSs["TAGS"]];
